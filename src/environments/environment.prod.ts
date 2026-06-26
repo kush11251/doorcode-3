@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://api.doorcode.com/api'
+  apiBaseUrl: 'https://doorcode-3-backend.onrender.com/api'
 };

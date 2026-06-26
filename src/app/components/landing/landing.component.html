@@ -1,0 +1,131 @@
+<div class="min-h-screen bg-gray-950 text-gray-100 font-sans relative overflow-x-hidden">
+  
+  <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+  <div class="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+  <header class="relative z-50 sticky top-0 bg-gray-950/80 backdrop-blur-lg border-b border-white/5">
+    <nav class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <h1 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">
+          DoorCode
+        </h1>
+      </div>
+      <div class="flex items-center gap-4">
+        <a routerLink="/login" class="text-sm font-medium text-gray-300 hover:text-white transition">Sign in</a>
+        <a routerLink="/signup" class="text-sm font-semibold py-2 px-5 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg hover:from-indigo-500 hover:to-purple-500 shadow-[0_0_15px_rgba(79,70,229,0.2)] transition-all">Get Started</a>
+      </div>
+    </nav>
+  </header>
+
+  <section class="max-w-7xl mx-auto px-6 pt-24 pb-20 text-center relative z-10 bg-cover bg-center bg-no-repeat" style="background-image: url('assets/hero_banner.png');" data-aos="fade-up">
+    <h2 class="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500 tracking-tight">
+      Orchestrate Exceptional Events.
+    </h2>
+    <p class="mt-6 max-w-2xl mx-auto text-lg text-gray-400">
+      The AI-native platform for seamless event management and secure check-ins. Built for the modern architect of experiences.
+    </p>
+    <div class="mt-12 flex flex-col sm:flex-row gap-5 items-center justify-center">
+      <a routerLink="/signup" class="w-full sm:w-auto text-lg font-semibold py-4 px-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl hover:from-indigo-500 hover:to-purple-500 shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all transform hover:-translate-y-0.5">
+        Get Started →
+      </a>
+      <a href="#" class="w-full sm:w-auto text-lg font-semibold py-4 px-10 bg-white/5 border border-white/5 rounded-xl hover:bg-white/10 transition">
+        Watch Demo ⊙
+      </a>
+    </div>
+  </section>
+
+  <section id="features" class="max-w-7xl mx-auto px-6 py-24 space-y-24 relative z-10">
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center" data-aos="fade-right">
+      <div>
+        <h3 class="text-3xl font-bold text-gray-100 flex items-center gap-3">
+          <span class="p-2.5 bg-indigo-500/10 rounded-xl border border-indigo-500/10 text-indigo-400">
+            <lucide-icon name="trending-up" class="w-5 h-5" />
+          </span>
+          Smart Timelines
+        </h3>
+        <p class="mt-4 text-gray-400">
+          AI-driven logistics that keep your guests moving perfectly. Dynamic scheduling adapts to real-time event flow.
+        </p>
+      </div>
+      <div class="bg-black/40 rounded-3xl border border-white/5 shadow-2xl relative overflow-hidden" data-aos="zoom-in" data-aos-delay="200">
+        <div class="absolute inset-0 bg-gradient-to-br from-indigo-600/5 to-purple-600/5 blur-3xl pointer-events-none"></div>
+        <img src="assets/landing_timeline.png" alt="Timeline Mockup" class="w-full h-auto rounded-xl border border-white/5 opacity-80" />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center" data-aos="fade-left">
+      <div class="md:order-2">
+        <h3 class="text-3xl font-bold text-gray-100 flex items-center gap-3">
+          <span class="p-2.5 bg-purple-500/10 rounded-xl border border-purple-500/10 text-purple-400">
+            <lucide-icon name="door-open" class="w-5 h-5" />
+          </span>
+          Secure DoorCodes
+        </h3>
+        <p class="mt-4 text-gray-400">
+          Encrypted, time-sensitive access codes that rotate to ensure maximum security and zero-fraud.
+        </p>
+      </div>
+      <div class="bg-black/40 rounded-3xl border border-white/5 shadow-2xl relative" data-aos="zoom-in" data-aos-delay="200">
+        <div class="absolute inset-0 bg-gradient-to-br from-indigo-600/5 to-purple-600/5 blur-3xl pointer-events-none"></div>
+        <img src="assets/landing_secure_code.png" alt="DoorCode Mockup" class="w-full h-auto opacity-70" />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center" data-aos="fade-right">
+      <div>
+        <h3 class="text-3xl font-bold text-gray-100 flex items-center gap-3">
+          <span class="p-2.5 bg-cyan-500/10 rounded-xl border border-cyan-500/10 text-cyan-400">
+            <lucide-icon name="chart-bar" class="w-5 h-5" />
+          </span>
+          Real-time Analytics
+        </h3>
+        <p class="mt-4 text-gray-400">
+          Monitor capacity, peak entry times, and demographic details. Make data-driven decisions on the fly.
+        </p>
+      </div>
+      <div class="bg-black/40 rounded-3xl border border-white/5 shadow-2xl relative" data-aos="zoom-in" data-aos-delay="200">
+        <div class="absolute inset-0 bg-gradient-to-br from-cyan-600/5 to-teal-600/5 blur-3xl pointer-events-none"></div>
+        <img src="assets/landing_analytics.png" alt="Analytics Chart Mockup" class="w-full h-auto opacity-70" />
+      </div>
+    </div>
+
+  </section>
+
+  <section class="max-w-7xl mx-auto px-6 py-32 text-center" data-aos="fade-up">
+    <div class="bg-white/5 backdrop-blur-xl p-12 md:p-16 rounded-3xl border border-white/10 shadow-2xl relative overflow-hidden">
+        <div class="absolute top-0 left-1/4 w-[300px] h-[300px] bg-indigo-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+        <div class="absolute bottom-0 right-1/4 w-[300px] h-[300px] bg-purple-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+        
+        <h2 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500 tracking-tight relative z-10">
+          Ready to elevate your next event?
+        </h2>
+        <p class="mt-6 max-w-xl mx-auto text-lg text-gray-400 relative z-10">
+          Join over 500+ premium organizers already using DoorCode to power their most exclusive experiences.
+        </p>
+        <div class="mt-12 flex flex-col sm:flex-row gap-5 items-center justify-center relative z-10">
+          <a routerLink="/signup" class="w-full sm:w-auto text-lg font-semibold py-4 px-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl hover:from-indigo-500 hover:to-purple-500 shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all">
+            Create Event
+          </a>
+          <a routerLink="/contact" class="w-full sm:w-auto text-lg font-semibold py-4 px-10 bg-white/5 border border-white/5 rounded-xl hover:bg-white/10 transition">
+            Contact Sales
+          </a>
+        </div>
+    </div>
+  </section>
+
+  <footer class="border-t border-white/5 bg-black/40 text-gray-500 relative z-10">
+    <div class="max-w-7xl mx-auto px-6 py-12 text-center">
+        <p class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500 opacity-60">
+            DoorCode
+        </p>
+        <p class="mt-4 text-sm">©2026 DoorCode AI. Orchestrating the future of events.</p>
+        <div class="mt-6 flex gap-6 items-center justify-center text-sm">
+            <a routerLink="/privacy" class="hover:text-white">Privacy</a>
+            <a routerLink="/terms" class="hover:text-white">Terms</a>
+            <a routerLink="/contact" class="hover:text-white">Contact</a>
+        </div>
+    </div>
+  </footer>
+
+</div>

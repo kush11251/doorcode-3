@@ -1,8 +1,27 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection, APP_INITIALIZER } from '@angular/core';
+import { provideRouter, withInMemoryScrolling } from '@angular/router';
+import { LucideAngularModule, icons } from 'lucide-angular';
 
 import { routes } from './app.routes';
 
+import * as AOS from 'aos';
+
 export const appConfig: ApplicationConfig = {
-  providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes)]
+  providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes, withInMemoryScrolling({
+      scrollPositionRestoration: 'top',
+      anchorScrolling: 'enabled'
+    })),
+    importProvidersFrom(LucideAngularModule.pick(icons)),
+    {
+      provide: APP_INITIALIZER,
+      useFactory: () => {
+        return () => {
+          AOS.init();
+        };
+      },
+      multi: true
+    }
+  ]
 };

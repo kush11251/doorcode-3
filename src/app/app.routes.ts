@@ -1,3 +1,52 @@
 import { Routes } from '@angular/router';
 
-export const routes: Routes = [];
+export const routes: Routes = [
+    {
+        path: '',
+        loadComponent: () => import('./components/landing/landing.component').then(m => m.LandingComponent)
+    },
+    {
+        path: 'login',
+        loadComponent: () => import('./components/login/login.component').then(m => m.LoginComponent)
+    },
+    {
+        path: 'signup',
+        loadComponent: () => import('./components/signup/signup.component').then(m => m.SignupComponent)
+    },
+    {
+        path: 'dashboard',
+        loadComponent: () => import('./components/dashboard/dashboard.component').then(m => m.DashboardComponent)
+    },
+    {
+        path: 'event-timeline',
+        loadComponent: () => import('./components/event-timeline/event-timeline.component').then(m => m.EventTimelineComponent)
+    },
+    {
+        path: 'event-overview',
+        loadComponent: () => import('./components/event-overview/event-overview.component').then(m => m.EventOverviewComponent)
+    },
+    {
+        path: 'organizer-dashboard',
+        loadComponent: () => import('./components/organizer-dashboard/organizer-dashboard.component').then(m => m.OrganizerDashboardComponent)
+    },
+    {
+        path: 'seating-arrangement',
+        loadComponent: () => import('./components/seating-arrangement/seating-arrangement.component').then(m => m.SeatingArrangementComponent)
+    },
+    {
+        path: 'contact',
+        loadComponent: () => import('./components/contact/contact.component').then(m => m.ContactComponent)
+    },
+    {
+        path: 'privacy',
+        loadComponent: () => import('./components/privacy/privacy.component').then(m => m.PrivacyComponent)
+    },
+    {
+        path: 'terms',
+        loadComponent: () => import('./components/terms/terms.component').then(m => m.TermsComponent)
+    },
+    {
+        path: '**',
+        redirectTo: ''
+    }
+];

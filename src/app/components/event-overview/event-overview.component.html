@@ -1,0 +1,132 @@
+<div class="min-h-screen bg-gray-950 text-gray-100 py-10 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-6xl mx-auto">
+    
+    <!-- Header Banner -->
+    <div class="relative rounded-3xl overflow-hidden bg-gray-900 border border-white/[0.05] mb-10 shadow-2xl">
+      <!-- Decorative Background Glow -->
+      <div class="absolute -top-24 -right-24 w-96 h-96 bg-indigo-600/30 rounded-full blur-[100px] pointer-events-none"></div>
+      
+      <div class="relative z-10 p-8 md:p-12">
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 mb-4 uppercase tracking-wider">
+          Upcoming Event
+        </span>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-2">
+          {{ eventData().title }}
+        </h1>
+        <p class="text-lg text-gray-400 font-medium mb-8">
+          Organized by <span class="text-gray-200">{{ eventData().organizer }}</span>
+        </p>
+
+        <div class="grid gap-4 sm:grid-cols-4">
+          <div class="rounded-3xl bg-white/[0.04] border border-white/[0.08] p-5 text-center">
+            <div class="text-4xl font-semibold text-white">{{ countdown().days }}</div>
+            <div class="text-xs uppercase tracking-[0.3em] text-gray-500 mt-2">Days</div>
+          </div>
+          <div class="rounded-3xl bg-white/[0.04] border border-white/[0.08] p-5 text-center">
+            <div class="text-4xl font-semibold text-white">{{ countdown().hours }}</div>
+            <div class="text-xs uppercase tracking-[0.3em] text-gray-500 mt-2">Hours</div>
+          </div>
+          <div class="rounded-3xl bg-white/[0.04] border border-white/[0.08] p-5 text-center">
+            <div class="text-4xl font-semibold text-white">{{ countdown().minutes }}</div>
+            <div class="text-xs uppercase tracking-[0.3em] text-gray-500 mt-2">Minutes</div>
+          </div>
+          <div class="rounded-3xl bg-white/[0.04] border border-white/[0.08] p-5 text-center">
+            <div class="text-4xl font-semibold text-white">{{ countdown().seconds }}</div>
+            <div class="text-xs uppercase tracking-[0.3em] text-gray-500 mt-2">Seconds</div>
+          </div>
+        </div>
+
+        <div class="mt-4 text-sm text-gray-400">
+          {{ countdown().expired ? 'Event has started' : 'Time left until the event begins' }}
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)] gap-8">
+      <div class="space-y-6">
+        <div class="bg-white/[0.02] border border-white/[0.05] backdrop-blur-xl rounded-2xl p-6 shadow-xl">
+          <h3 class="text-lg font-bold text-white mb-6 border-b border-white/[0.05] pb-3">Event Details</h3>
+          <ul class="space-y-6">
+            <!-- Timing -->
+            <li class="flex items-start">
+              <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 mr-4">
+                <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-gray-200">{{ eventData().date }}</p>
+                <p class="text-sm text-gray-400 mt-0.5">{{ eventData().time }}</p>
+              </div>
+            </li>
+
+            <!-- Location -->
+            <li class="flex items-start">
+              <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center border border-purple-500/20 mr-4">
+                <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-gray-200">{{ eventData().location }}</p>
+                <p class="text-sm text-gray-400 mt-0.5">{{ eventData().address }}</p>
+              </div>
+            </li>
+
+            <!-- Dress Code -->
+            <li class="flex items-start">
+              <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20 mr-4">
+                <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-gray-200">Dress Code</p>
+                <p class="text-sm text-gray-400 mt-0.5">{{ eventData().dressCode }}</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Right Column: Description and Activities -->
+      <div class="space-y-8">
+        
+        <!-- About Section -->
+        <div class="bg-white/[0.02] border border-white/[0.05] backdrop-blur-xl rounded-2xl p-8 shadow-xl">
+          <h2 class="text-2xl font-bold text-white mb-4">About the Event</h2>
+          <p class="text-gray-300 leading-relaxed">
+            {{ eventData().description }}
+          </p>
+        </div>
+
+        <!-- Featured Activities / Highlights -->
+        <div class="bg-white/[0.02] border border-white/[0.05] backdrop-blur-xl rounded-2xl p-8 shadow-xl">
+          <h2 class="text-2xl font-bold text-white mb-6">Key Activities</h2>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div *ngFor="let activity of eventData().activities" class="bg-black/40 border border-gray-800 rounded-xl p-5 hover:border-indigo-500/30 transition-colors">
+              <div class="text-xs font-mono text-indigo-400 mb-2">{{ activity.time }}</div>
+              <h4 class="text-lg font-bold text-gray-100 mb-2">{{ activity.name }}</h4>
+              <p class="text-sm text-gray-400">{{ activity.description }}</p>
+            </div>
+          </div>
+          
+          <div class="mt-8 grid gap-3 sm:grid-cols-3">
+            <a routerLink="/event-timeline" class="block rounded-2xl bg-indigo-500/10 border border-indigo-500/20 px-5 py-4 text-center text-sm font-semibold text-indigo-200 hover:bg-indigo-500/15 transition">
+              View Full Timeline
+            </a>
+            <a routerLink="/seating-arrangement" class="block rounded-2xl bg-cyan-500/10 border border-cyan-500/20 px-5 py-4 text-center text-sm font-semibold text-cyan-200 hover:bg-cyan-500/15 transition">
+              Seating Arrangement
+            </a>
+            <a routerLink="/dashboard" class="block rounded-2xl bg-white/[0.05] border border-white/[0.08] px-5 py-4 text-center text-sm font-semibold text-white hover:bg-white/[0.08] transition">
+              Back to Dashboard
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

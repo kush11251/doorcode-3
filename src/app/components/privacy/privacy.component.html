@@ -1,0 +1,41 @@
+<div class="min-h-screen bg-gray-950 text-gray-300 py-16 px-6 lg:px-8 relative overflow-hidden">
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+  <div class="max-w-3xl mx-auto relative z-10">
+    <div class="mb-12 text-center">
+      <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500 tracking-tight mb-4">
+        Privacy Policy
+      </h1>
+      <p class="text-gray-500">Last Updated: {{ lastUpdated }}</p>
+    </div>
+
+    <div class="bg-white/[0.02] border border-white/[0.05] backdrop-blur-xl rounded-3xl p-8 md:p-12 shadow-2xl space-y-8 text-sm md:text-base leading-relaxed">
+      
+      <section>
+        <h2 class="text-xl font-bold text-gray-100 mb-4">1. Data Collection & Usage</h2>
+        <p>
+          At DoorCode, we orchestrate exceptional events through AI-driven logistics. To provide our secure check-in services, we collect minimal necessary data, including email addresses, event metadata, and real-time scanning analytics. We do not sell your personal data to third parties.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-100 mb-4">2. Secure DoorCodes & Tracking</h2>
+        <p>
+          Our platform utilizes encrypted, time-sensitive access codes. When these codes are scanned at an event, we log the timestamp and entry point to populate real-time analytics for the organizer. This data is aggregated and anonymized after the event concludes.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-100 mb-4">3. Data Retention</h2>
+        <p>
+          Event attendee lists and basic profile information are retained for as long as the organizer maintains an active account. You may request the deletion of your account and associated data at any time by contacting our support team.
+        </p>
+      </section>
+
+      <div class="pt-8 border-t border-white/10 text-center">
+        <p>Questions about our privacy practices?</p>
+        <a routerLink="/contact" class="text-indigo-400 hover:text-indigo-300 font-semibold mt-2 inline-block transition-colors">Contact our Data Protection Officer →</a>
+      </div>
+    </div>
+  </div>
+</div>

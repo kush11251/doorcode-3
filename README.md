@@ -1,6 +1,18 @@
-# Doorcode3
+# DoorCode3
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.20.
+Author: **Kussagrapathak**
+
+## Project Description
+
+DoorCode3 is an Angular-based event management platform designed to help organizers and attendees interact with modern event workflows. It includes a polished landing page, login/signup flow, dashboard, event overview, timeline, and seating arrangement modules, all built with Angular standalone components and Tailwind CSS.
+
+## Key Features
+
+- Event dashboard with clickable event cards
+- Responsive event overview with countdown timer
+- Timeline view with schedule and speaker/location details
+- Seating arrangement and organizer management pages
+- SEO-friendly Angular app structure with metadata and Open Graph tags
 
 ## Development server
 

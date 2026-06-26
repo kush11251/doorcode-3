@@ -1,0 +1,107 @@
+<div class="min-h-screen bg-gray-950 text-gray-100 py-16 px-6 lg:px-8 relative overflow-hidden">
+  
+  <div class="absolute top-1/4 left-0 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+  <div class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+  <div class="max-w-6xl mx-auto relative z-10">
+    <div class="text-center mb-16">
+      <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500 tracking-tight">
+        Get in Touch
+      </h1>
+      <p class="text-gray-400 mt-4 text-lg">Have a question about DoorCode? Our team is here to help.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-start">
+      
+      <div class="space-y-10">
+        <div class="bg-white/[0.02] border border-white/[0.05] backdrop-blur-xl p-8 rounded-3xl shadow-xl">
+          <h3 class="text-2xl font-bold text-white mb-6">Headquarters</h3>
+          <div class="flex items-start gap-4 text-gray-300">
+            <div class="p-3 bg-indigo-500/10 rounded-xl text-indigo-400 border border-indigo-500/20">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            </div>
+            <div>
+              <p class="font-semibold text-white">DoorCode Inc.</p>
+              <p class="mt-1">Viman Nagar</p>
+              <p>Pune, Maharashtra, India</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white/[0.02] border border-white/[0.05] backdrop-blur-xl p-8 rounded-3xl shadow-xl">
+          <h3 class="text-2xl font-bold text-white mb-6">Direct Channels</h3>
+          
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 text-gray-300">
+              <div class="p-3 bg-purple-500/10 rounded-xl text-purple-400 border border-purple-500/20">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500 uppercase tracking-wider font-semibold">Sales & Enterprise</p>
+                <a href="mailto:sales@doorcode.com" class="text-white hover:text-indigo-400 transition-colors">sales&#64;doorcode.com</a>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-4 text-gray-300">
+              <div class="p-3 bg-cyan-500/10 rounded-xl text-cyan-400 border border-cyan-500/20">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500 uppercase tracking-wider font-semibold">Technical Support</p>
+                <a href="mailto:support@doorcode.com" class="text-white hover:text-cyan-400 transition-colors">support&#64;doorcode.com</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-black/40 border border-white/[0.05] backdrop-blur-xl p-8 md:p-10 rounded-3xl shadow-2xl">
+        <h3 class="text-2xl font-bold text-white mb-6">Send a Message</h3>
+        
+        @if (isSuccess()) {
+          <div class="mb-6 p-4 bg-green-500/10 border border-green-500/20 text-green-400 rounded-xl text-center">
+            Thank you! Your message has been sent successfully. We will be in touch shortly.
+          </div>
+        }
+
+        <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="space-y-5">
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-1.5">Name</label>
+              <input type="text" formControlName="name" class="w-full px-4 py-3 bg-gray-900 border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-100 outline-none transition-all" [ngClass]="f['name'].invalid && f['name'].touched ? 'border-red-500/50' : 'border-gray-800'" placeholder="Jane Doe">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-1.5">Email</label>
+              <input type="email" formControlName="email" class="w-full px-4 py-3 bg-gray-900 border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-100 outline-none transition-all" [ngClass]="f['email'].invalid && f['email'].touched ? 'border-red-500/50' : 'border-gray-800'" placeholder="jane@example.com">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1.5">Subject</label>
+            <input type="text" formControlName="subject" class="w-full px-4 py-3 bg-gray-900 border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-100 outline-none transition-all" [ngClass]="f['subject'].invalid && f['subject'].touched ? 'border-red-500/50' : 'border-gray-800'" placeholder="How can we help?">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1.5">Message</label>
+            <textarea formControlName="message" rows="5" class="w-full px-4 py-3 bg-gray-900 border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-100 outline-none transition-all resize-none" [ngClass]="f['message'].invalid && f['message'].touched ? 'border-red-500/50' : 'border-gray-800'" placeholder="Type your message here..."></textarea>
+          </div>
+
+          <button type="submit" [disabled]="isLoading()" class="w-full py-4 px-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold rounded-xl shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-950 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2">
+            @if (isLoading()) {
+              <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Sending...
+            } @else {
+              Send Message
+            }
+          </button>
+
+        </form>
+      </div>
+      
+    </div>
+  </div>
+</div>

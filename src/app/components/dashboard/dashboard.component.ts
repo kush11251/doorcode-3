@@ -2,15 +2,7 @@ import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-
-interface DashboardEvent {
-  id: string;
-  title: string;
-  date: string;
-  location: string;
-  status: string;
-  guests: number;
-}
+import { DashboardEvent } from '../../models/interfaces';
 
 @Component({
   selector: 'app-dashboard',

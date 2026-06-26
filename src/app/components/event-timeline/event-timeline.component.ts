@@ -1,17 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-// Interface for strong typing
-export interface TimelineEvent {
-  id: string;
-  startTime: string;
-  endTime: string;
-  title: string;
-  description?: string;
-  type: 'session' | 'break' | 'keynote';
-  speaker?: string;
-  location?: string;
-}
+import { TimelineEvent } from '../../models/interfaces';
 
 @Component({
   selector: 'app-event-timeline',

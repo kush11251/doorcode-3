@@ -1,20 +1,6 @@
 import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-export interface Seat {
-  id: string;
-  tableId: string;
-  number: number;
-  assigneeName: string | null; // null if the seat is unassigned
-  role: 'Guest' | 'Speaker' | 'VIP' | 'Empty';
-}
-
-export interface Table {
-  id: string;
-  name: string;
-  capacity: number;
-  seats: Seat[];
-}
+import { Seat, Table } from '../../models/interfaces';
 
 @Component({
   selector: 'app-seating-arrangement',

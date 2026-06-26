@@ -30,6 +30,10 @@ export const routes: Routes = [
         loadComponent: () => import('./components/organizer-dashboard/organizer-dashboard.component').then(m => m.OrganizerDashboardComponent)
     },
     {
+        path: 'admin-dashboard',
+        loadComponent: () => import('./components/admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent)
+    },
+    {
         path: 'seating-arrangement',
         loadComponent: () => import('./components/seating-arrangement/seating-arrangement.component').then(m => m.SeatingArrangementComponent)
     },

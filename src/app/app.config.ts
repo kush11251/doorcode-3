@@ -1,5 +1,6 @@
 import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection, APP_INITIALIZER } from '@angular/core';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
 import { LucideAngularModule, icons } from 'lucide-angular';
 
 import { routes } from './app.routes';
@@ -13,7 +14,7 @@ export const appConfig: ApplicationConfig = {
       scrollPositionRestoration: 'top',
       anchorScrolling: 'enabled'
     })),
-    importProvidersFrom(LucideAngularModule.pick(icons)),
+    importProvidersFrom(HttpClientModule, LucideAngularModule.pick(icons)),
     {
       provide: APP_INITIALIZER,
       useFactory: () => {

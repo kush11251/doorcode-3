@@ -14,11 +14,9 @@
 
     <div class="bg-white/[0.02] border border-white/[0.05] backdrop-blur-xl rounded-2xl p-8 shadow-2xl">
       
-      @if (errorMessage()) {
-        <div class="mb-6 p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-lg text-center">
-          {{ errorMessage() }}
-        </div>
-      }
+      <div *ngIf="errorMessage()" class="mb-6 p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-lg text-center">
+        {{ errorMessage() }}
+      </div>
 
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
         
@@ -32,9 +30,7 @@
             [ngClass]="email.invalid && email.touched ? 'border-red-500/50' : 'border-gray-800'"
             placeholder="you@example.com"
           >
-          @if (email.invalid && email.touched) {
-            <p class="text-xs text-red-400 mt-1.5">Please enter a valid email address.</p>
-          }
+          <p *ngIf="email.invalid && email.touched" class="text-xs text-red-400 mt-1.5">Please enter a valid email address.</p>
         </div>
 
         <div>
@@ -50,9 +46,7 @@
             [ngClass]="password.invalid && password.touched ? 'border-red-500/50' : 'border-gray-800'"
             placeholder="••••••••"
           >
-          @if (password.invalid && password.touched) {
-            <p class="text-xs text-red-400 mt-1.5">Password must be at least 6 characters long.</p>
-          }
+          <p *ngIf="password.invalid && password.touched" class="text-xs text-red-400 mt-1.5">Password must be at least 6 characters long.</p>
         </div>
 
         <button 
@@ -60,15 +54,14 @@
           [disabled]="isLoading()"
           class="w-full py-3.5 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold rounded-lg shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500 disabled:opacity-50 disabled:transform-none disabled:cursor-not-allowed flex justify-center items-center gap-2"
         >
-          @if (isLoading()) {
+          <ng-container *ngIf="isLoading(); else signInLabel">
             <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
             Signing In...
-          } @else {
-            Sign In
-          }
+          </ng-container>
+          <ng-template #signInLabel>Sign In</ng-template>
         </button>
 
       </form>

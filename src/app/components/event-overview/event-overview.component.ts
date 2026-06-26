@@ -1,34 +1,7 @@
 import { Component, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-
-// Interfaces for strong typing
-export interface Activity {
-  time: string;
-  name: string;
-  description: string;
-}
-
-export interface EventDetails {
-  title: string;
-  organizer: string;
-  date: string;
-  time: string;
-  startDateTime: string;
-  location: string;
-  address: string;
-  dressCode: string;
-  description: string;
-  activities: Activity[];
-}
-
-export interface Countdown {
-  days: string;
-  hours: string;
-  minutes: string;
-  seconds: string;
-  expired: boolean;
-}
+import { Activity, Countdown, EventDetails } from '../../models/interfaces';
 
 @Component({
   selector: 'app-event-overview',

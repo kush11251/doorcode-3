@@ -2,6 +2,9 @@ import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ApiService } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
+import { LoginPayload } from '../../models/interfaces';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +20,7 @@ export class LoginComponent {
   isLoading = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(private fb: FormBuilder, private api: ApiService, private auth: AuthService, private router: Router) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
@@ -37,23 +40,19 @@ export class LoginComponent {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    // Simulated API Authentication Call
-    setTimeout(() => {
-      const { email, password } = this.loginForm.value;
-      
-      // Mock Authentication Check
-      if (email === 'organizer@doorcode.com' && password === 'password123') {
+    const payload: LoginPayload = this.loginForm.value;
+
+    this.api.login(payload).subscribe({
+      next: (response) => {
         this.isLoading.set(false);
-        // Navigate to the organizer dashboard
-        this.router.navigate(['/dashboard']); 
-      } else if (email === 'attendee@doorcode.com' && password === 'password123') {
+        this.auth.saveSession(response);
+        const redirectRoute = this.auth.getRedirectRouteForRole(response.user.role);
+        this.router.navigate([redirectRoute]);
+      },
+      error: (err) => {
         this.isLoading.set(false);
-        // Navigate to the attendee event flow
-        this.router.navigate(['/join-event']); 
-      } else {
-        this.isLoading.set(false);
-        this.errorMessage.set('Invalid email or password. Try organizer@doorcode.com');
+        this.errorMessage.set(err?.error?.message || 'Login failed. Please try again.');
       }
-    }, 1500);
+    });
   }
 }

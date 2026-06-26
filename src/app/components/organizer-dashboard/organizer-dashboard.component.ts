@@ -1,23 +1,6 @@
 import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-export interface OrganizerEvent {
-  id: string;
-  name: string;
-  date: string;
-  location: string;
-  status: 'Published' | 'Draft' | 'Completed';
-  attendeeCount: number;
-}
-
-export interface Invitee {
-  id: string;
-  eventId: string;
-  name: string;
-  email: string;
-  status: 'Attending' | 'Pending' | 'Declined';
-  checkInStatus: boolean;
-}
+import { Invitee, OrganizerEvent } from '../../models/interfaces';
 
 @Component({
   selector: 'app-organizer-dashboard',

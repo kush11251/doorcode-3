@@ -1,0 +1,337 @@
+<div class="min-h-screen bg-gray-950 text-gray-100 flex overflow-hidden font-sans">
+
+  <aside class="w-64 bg-black/60 border-r border-red-500/10 flex flex-col hidden md:flex backdrop-blur-xl">
+    <div class="p-6 border-b border-white/[0.05]">
+      <h1 class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-amber-500 tracking-tight">
+        DoorCode Admin
+      </h1>
+      <p class="text-[10px] text-red-400/70 font-mono uppercase tracking-widest mt-1">Superuser Access</p>
+    </div>
+
+    <nav class="flex-1 p-4 space-y-2">
+      <button (click)="setSection('overview')" 
+              [ngClass]="{'bg-red-500/10 text-red-400 border-red-500/20': currentSection() === 'overview', 'text-gray-400 hover:bg-white/[0.02] border-transparent': currentSection() !== 'overview'}"
+              class="w-full flex items-center gap-3 px-4 py-3 rounded-xl border transition-all text-sm font-medium text-left">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z"></path></svg>
+        System Overview
+      </button>
+
+      <button (click)="setSection('logs')"
+              [ngClass]="{'bg-amber-500/10 text-amber-400 border-amber-500/20': currentSection() === 'logs', 'text-gray-400 hover:bg-white/[0.02] border-transparent': currentSection() !== 'logs'}"
+              class="w-full flex items-center gap-3 px-4 py-3 rounded-xl border transition-all text-sm font-medium text-left">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        System Logs
+        @if (errorLogCount() > 0) {
+          <span class="ml-auto bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] font-mono px-2 py-0.5 rounded-full">
+            {{ errorLogCount() }} ERR
+          </span>
+        }
+      </button>
+
+      <button (click)="setSection('users')"
+              [ngClass]="{'bg-blue-500/10 text-blue-400 border-blue-500/20': currentSection() === 'users', 'text-gray-400 hover:bg-white/[0.02] border-transparent': currentSection() !== 'users'}"
+              class="w-full flex items-center gap-3 px-4 py-3 rounded-xl border transition-all text-sm font-medium text-left">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10a3 3 0 11-6 0 3 3 0 016 0zM15 20H9m6 0h6v-2a9 9 0 00-18 0v2h6z"></path></svg>
+        Platform Users
+      </button>
+
+      <button (click)="setSection('settings')"
+              [ngClass]="{'bg-gray-800 text-gray-200 border-gray-700': currentSection() === 'settings', 'text-gray-400 hover:bg-white/[0.02] border-transparent': currentSection() !== 'settings'}"
+              class="w-full flex items-center gap-3 px-4 py-3 rounded-xl border transition-all text-sm font-medium text-left">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        Global Toggles
+      </button>
+    </nav>
+  </aside>
+
+  <main class="flex-1 flex flex-col h-screen overflow-y-auto relative z-10">
+    <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-red-600/5 rounded-full blur-[140px] pointer-events-none -z-10"></div>
+
+    <header class="p-6 flex justify-between items-center border-b border-white/[0.05] bg-gray-950/80 backdrop-blur-md sticky top-0 z-20">
+      <div class="flex items-center gap-3">
+        <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+        <h2 class="text-xl font-mono font-bold text-gray-100 tracking-tight">Root&#64;DoorCode:~#</h2>
+      </div>
+      <div class="bg-red-500/10 border border-red-500/20 text-red-400 text-xs px-3 py-1 font-mono rounded-lg">
+        Admin Cluster
+      </div>
+    </header>
+
+    <div class="p-6 max-w-7xl mx-auto w-full space-y-8">
+      
+      @if (currentSection() === 'overview') {
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          @for (metric of metrics(); track metric.label) {
+            <div class="bg-white/[0.01] border border-white/[0.05] rounded-2xl p-6 shadow-xl relative">
+              <p class="text-xs text-gray-500 font-medium uppercase tracking-wider mb-2">{{ metric.label }}</p>
+              <div class="flex items-baseline justify-between">
+                <p class="text-3xl font-extrabold text-white tracking-tight">{{ metric.value | number }}</p>
+                <span class="text-xs font-mono px-2 py-0.5 rounded"
+                      [ngClass]="metric.isPositive ? 'text-green-400 bg-green-500/10' : 'text-red-400 bg-red-500/10'">
+                  {{ metric.change }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="bg-white/[0.01] border border-white/[0.05] rounded-2xl shadow-xl overflow-hidden">
+          <div class="p-6 border-b border-white/[0.05] flex justify-between items-center">
+            <h3 class="text-lg font-bold text-white font-mono">Core Orchestrator Streams</h3>
+            <button (click)="setSection('logs')" class="text-xs text-indigo-400 hover:text-indigo-300 font-medium">
+              View Analytics Stream &rarr;
+            </button>
+          </div>
+          <div class="divide-y divide-white/[0.03] font-mono text-xs p-4 bg-black/30 space-y-2">
+            @for (log of logs().slice(0, 3); track log.id) {
+              <div class="flex items-start gap-4 py-2">
+                <span class="text-gray-600">[{{ formatTimestampIST(log.timestamp) }}]</span>
+                <span class="px-1.5 py-0.2 rounded font-bold"
+                      [ngClass]="{'text-red-400 bg-red-500/10': log.level === 'ERROR', 'text-yellow-400 bg-yellow-500/10': log.level === 'WARNING', 'text-cyan-400 bg-cyan-500/10': log.level === 'INFO'}">
+                  {{ log.level }}
+                </span>
+                <span class="text-gray-400 shrink-0">[{{ log.service }}]</span>
+                <p class="text-gray-300 truncate">{{ log.message }}</p>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      @if (currentSection() === 'logs') {
+        <div class="bg-white/[0.01] border border-white/[0.05] rounded-2xl shadow-xl overflow-hidden">
+          <div class="p-6 border-b border-white/[0.05] flex justify-between items-center bg-black/20">
+            <div>
+              <h3 class="text-lg font-bold text-white">Telemetry & Log Terminal</h3>
+              <p class="text-xs text-gray-500 mt-1">Real-time infrastructure system output metrics.</p>
+            </div>
+            <div class="flex gap-2">
+              <button (click)="fetchLogs()" [disabled]="isLoadingLogs()" class="py-1.5 px-4 bg-blue-500/10 hover:bg-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed text-blue-400 text-xs font-mono rounded-lg transition-colors border border-blue-500/20 flex items-center gap-2">
+                @if (!isLoadingLogs()) {
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                } @else {
+                  <svg class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1" fill="currentColor"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 1v6m0 6v6"></path></svg>
+                }
+                Refresh
+              </button>
+              <button (click)="clearLogs()" class="py-1.5 px-4 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-mono rounded-lg transition-colors border border-red-500/20">
+                Flush Buffer
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse font-mono text-xs">
+              <thead>
+                <tr class="bg-black/40 text-gray-500 uppercase tracking-wider border-b border-white/[0.05]">
+                  <th class="p-4 font-medium">Trace ID</th>
+                  <th class="p-4 font-medium">Timestamp</th>
+                  <th class="p-4 font-medium">Component</th>
+                  <th class="p-4 font-medium">Severity</th>
+                  <th class="p-4 font-medium">Payload Message</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/[0.03] bg-black/10">
+                @for (log of logs(); track log.id) {
+                  <tr class="hover:bg-white/[0.01] transition-colors">
+                    <td class="p-4 text-gray-500">{{ log.id }}</td>
+                    <td class="p-4 text-gray-400">{{ formatTimestampIST(log.timestamp) }}</td>
+                    <td class="p-4 text-indigo-400">{{ log.service }}</td>
+                    <td class="p-4">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold"
+                            [ngClass]="{'bg-red-500/10 text-red-400': log.level === 'ERROR', 'bg-yellow-500/10 text-yellow-400': log.level === 'WARNING', 'bg-cyan-500/10 text-cyan-400': log.level === 'INFO'}">
+                        {{ log.level }}
+                      </span>
+                    </td>
+                    <td class="p-4 text-gray-300 whitespace-pre-wrap max-w-md">{{ log.message }}</td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="5" class="p-8 text-center text-gray-600">No logs cached inside this session layer buffer.</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+
+      @if (currentSection() === 'settings') {
+        <div class="bg-white/[0.01] border border-white/[0.05] rounded-2xl p-8 shadow-xl space-y-8">
+          <div>
+            <h3 class="text-lg font-bold text-white">Global Control Parameters</h3>
+            <p class="text-xs text-gray-500 mt-1">Override constraints directly over the entire user database instantly.</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+            
+            <div class="bg-black/30 border border-white/[0.05] p-6 rounded-xl flex items-center justify-between">
+              <div>
+                <p class="font-bold text-gray-200 text-sm">Global Maintenance Mode</p>
+                <p class="text-xs text-gray-500 mt-1">Force routing protocols to route attendees to a screen lock panel.</p>
+              </div>
+              <button (click)="toggleMaintenance()" 
+                      [ngClass]="isMaintenanceMode() ? 'bg-red-600' : 'bg-gray-800'"
+                      class="w-12 h-6 rounded-full p-1 transition-colors duration-200 focus:outline-none flex items-center">
+                <div [ngClass]="isMaintenanceMode() ? 'translate-x-6' : 'translate-x-0'"
+                     class="w-4 h-4 bg-white rounded-full transition-transform duration-200"></div>
+              </button>
+            </div>
+
+            <div class="bg-black/30 border border-white/[0.05] p-6 rounded-xl flex items-center justify-between">
+              <div>
+                <p class="font-bold text-gray-200 text-sm">New Organizer Registrations</p>
+                <p class="text-xs text-gray-500 mt-1">Toggles permission states over registration submission endpoints.</p>
+              </div>
+              <button (click)="toggleRegistration()" 
+                      [ngClass]="isRegistrationOpen() ? 'bg-green-600' : 'bg-gray-800'"
+                      class="w-12 h-6 rounded-full p-1 transition-colors duration-200 focus:outline-none flex items-center">
+                <div [ngClass]="isRegistrationOpen() ? 'translate-x-6' : 'translate-x-0'"
+                     class="w-4 h-4 bg-white rounded-full transition-transform duration-200"></div>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      }
+
+      @if (currentSection() === 'users') {
+        <div class="bg-white/[0.01] border border-white/[0.05] rounded-2xl shadow-xl overflow-hidden">
+          <div class="p-6 border-b border-white/[0.05] bg-black/20">
+            <div>
+              <h3 class="text-lg font-bold text-white">Platform Users Registry</h3>
+              <p class="text-xs text-gray-500 mt-1">Complete user database with roles, events, and account metadata.</p>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            @if (isLoadingUsers()) {
+              <div class="p-8 text-center text-gray-500">Loading users...</div>
+            } @else {
+              <table class="w-full text-left border-collapse font-mono text-xs">
+                <thead>
+                  <tr class="bg-black/40 text-gray-500 uppercase tracking-wider border-b border-white/[0.05]">
+                    <th class="p-4 font-medium">User ID</th>
+                    <th class="p-4 font-medium">Name</th>
+                    <th class="p-4 font-medium">Email</th>
+                    <th class="p-4 font-medium">Phone</th>
+                    <th class="p-4 font-medium">Role</th>
+                    <th class="p-4 font-medium">Created</th>
+                    <th class="p-4 font-medium">Action</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-white/[0.03] bg-black/10">
+                  @for (user of users(); track user._id) {
+                    <tr class="hover:bg-white/[0.01] transition-colors">
+                      <td class="p-4 text-gray-500 font-mono text-[10px]">{{ user.userId.substring(0, 8) }}</td>
+                      <td class="p-4 text-gray-300">{{ user.firstName }} {{ user.lastName }}</td>
+                      <td class="p-4 text-blue-400">{{ user.email }}</td>
+                      <td class="p-4 text-gray-400">{{ user.phoneNumber }}</td>
+                      <td class="p-4">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold"
+                              [ngClass]="{'bg-purple-500/10 text-purple-400': user.role === 'admin', 'bg-blue-500/10 text-blue-400': user.role === 'organizer', 'bg-gray-500/10 text-gray-400': user.role === 'user'}">
+                          {{ user.role | uppercase }}
+                        </span>
+                      </td>
+                      <td class="p-4 text-gray-400 text-[10px]">{{ formatTimestampISTFull(user.createdAt) }}</td>
+                      <td class="p-4">
+                        <button (click)="showUserDetail(user.userId)" class="text-xs text-blue-400 hover:text-blue-300 font-medium">
+                          View →
+                        </button>
+                      </td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="7" class="p-8 text-center text-gray-600">No users found in the database.</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            }
+          </div>
+        </div>
+      }
+
+    </div>
+
+    <!-- User Detail Modal -->
+    @if (showUserModal() && selectedUser()) {
+      <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-gray-900 border border-white/[0.05] rounded-2xl shadow-2xl max-w-lg w-full">
+          <div class="p-6 border-b border-white/[0.05] flex justify-between items-center">
+            <h3 class="text-lg font-bold text-white">User Profile</h3>
+            <button (click)="closeUserModal()" class="text-gray-400 hover:text-gray-300">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+          </div>
+          
+          @if (isLoadingUserDetail()) {
+            <div class="p-8 text-center text-gray-400">Loading user details...</div>
+          } @else {
+            <div class="p-6 space-y-4">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">First Name</p>
+                  <p class="text-sm text-gray-200 mt-1">{{ selectedUser()?.firstName }}</p>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Last Name</p>
+                  <p class="text-sm text-gray-200 mt-1">{{ selectedUser()?.lastName }}</p>
+                </div>
+              </div>
+
+              <div>
+                <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Email Address</p>
+                <p class="text-sm text-blue-400 mt-1">{{ selectedUser()?.email }}</p>
+              </div>
+
+              <div>
+                <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Phone Number</p>
+                <p class="text-sm text-gray-200 mt-1">{{ selectedUser()?.phoneNumber }}</p>
+              </div>
+
+              <div>
+                <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Role</p>
+                <span class="text-xs font-bold mt-1 inline-block px-2 py-1 rounded"
+                      [ngClass]="{'bg-purple-500/10 text-purple-400': selectedUser()?.role === 'admin', 'bg-blue-500/10 text-blue-400': selectedUser()?.role === 'organizer', 'bg-gray-500/10 text-gray-400': selectedUser()?.role === 'user'}">
+                  {{ selectedUser()?.role | uppercase }}
+                </span>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4 pt-2">
+                <div>
+                  <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">User ID</p>
+                  <p class="text-[10px] text-gray-400 mt-1 font-mono">{{ selectedUser()?.userId }}</p>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">DB ID</p>
+                  <p class="text-[10px] text-gray-400 mt-1 font-mono">{{ selectedUser()?._id }}</p>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4 pt-2">
+                <div>
+                  <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Created At</p>
+                  <p class="text-xs text-gray-300 mt-1">{{ formatTimestampISTFull(selectedUser()?.createdAt || '') }}</p>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Updated At</p>
+                  <p class="text-xs text-gray-300 mt-1">{{ formatTimestampISTFull(selectedUser()?.updatedAt || '') }}</p>
+                </div>
+              </div>
+
+              <div>
+                <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Events Count</p>
+                <p class="text-sm text-gray-200 mt-1">{{ selectedUser()?.events?.length || 0 }}</p>
+              </div>
+            </div>
+
+            <div class="p-6 border-t border-white/[0.05] flex gap-3">
+              <button (click)="closeUserModal()" class="flex-1 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 rounded-lg transition-colors text-sm font-medium">
+                Close
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    }

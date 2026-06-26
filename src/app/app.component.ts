@@ -1,12 +1,8 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterOutlet, NavigationEnd } from '@angular/router';
-
-interface DoorCodeUser {
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-}
+import { AuthService } from './services/auth.service';
+import { AuthUser } from './models/interfaces';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +17,8 @@ export class AppComponent {
   loggedIn = signal(false);
   userInitials = signal('');
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private auth: AuthService) {
+    this.auth.initExpiryWatcher(this.router);
     this.updateHeaderState(this.router.url);
 
     this.router.events.subscribe((event) => {
@@ -34,30 +31,17 @@ export class AppComponent {
 
   private updateHeaderState(path: string): void {
     this.showHeader.set(path !== '/');
-    const user = this.getStoredUser();
-    const logged = !!user;
+    const user = this.auth.getUser();
+    const logged = this.auth.isAuthenticated();
     this.loggedIn.set(logged);
     this.userInitials.set(logged ? this.extractInitials(user) : '');
   }
 
-  private getStoredUser(): DoorCodeUser | null {
-    if (typeof localStorage === 'undefined') {
-      return null;
+  private extractInitials(user: AuthUser | null): string {
+    if (!user) {
+      return 'JD';
     }
 
-    const raw = localStorage.getItem('doorcodeUser');
-    if (!raw) {
-      return null;
-    }
-
-    try {
-      return JSON.parse(raw) as DoorCodeUser;
-    } catch {
-      return null;
-    }
-  }
-
-  private extractInitials(user: DoorCodeUser): string {
     const first = user.firstName?.trim() || '';
     const last = user.lastName?.trim() || '';
     if (first || last) {

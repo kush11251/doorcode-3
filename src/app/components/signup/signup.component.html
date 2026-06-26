@@ -14,11 +14,9 @@
 
     <div class="bg-white/[0.02] border border-white/[0.05] backdrop-blur-xl rounded-2xl p-8 shadow-2xl">
       
-      @if (errorMessage()) {
-        <div class="mb-6 p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-lg text-center">
-          {{ errorMessage() }}
-        </div>
-      }
+      <div *ngIf="errorMessage()" class="mb-6 p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-lg text-center">
+        {{ errorMessage() }}
+      </div>
 
       <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="space-y-5">
         
@@ -28,9 +26,7 @@
             <input type="text" formControlName="firstName"
               class="w-full px-4 py-2.5 bg-black/40 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-100 placeholder-gray-600 transition-all outline-none"
               [ngClass]="f['firstName'].invalid && f['firstName'].touched ? 'border-red-500/50' : 'border-gray-800'" placeholder="Jane">
-            @if (f['firstName'].invalid && f['firstName'].touched) {
-              <p class="text-xs text-red-400 mt-1.5">First name is required.</p>
-            }
+            <p *ngIf="f['firstName'].invalid && f['firstName'].touched" class="text-xs text-red-400 mt-1.5">First name is required.</p>
           </div>
 
           <div>
@@ -38,9 +34,7 @@
             <input type="text" formControlName="lastName"
               class="w-full px-4 py-2.5 bg-black/40 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-100 placeholder-gray-600 transition-all outline-none"
               [ngClass]="f['lastName'].invalid && f['lastName'].touched ? 'border-red-500/50' : 'border-gray-800'" placeholder="Doe">
-            @if (f['lastName'].invalid && f['lastName'].touched) {
-              <p class="text-xs text-red-400 mt-1.5">Last name is required.</p>
-            }
+            <p *ngIf="f['lastName'].invalid && f['lastName'].touched" class="text-xs text-red-400 mt-1.5">Last name is required.</p>
           </div>
         </div>
 
@@ -49,9 +43,7 @@
           <input type="tel" formControlName="mobile"
             class="w-full px-4 py-2.5 bg-black/40 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-100 placeholder-gray-600 transition-all outline-none"
             [ngClass]="f['mobile'].invalid && f['mobile'].touched ? 'border-red-500/50' : 'border-gray-800'" placeholder="1234567890">
-          @if (f['mobile'].invalid && f['mobile'].touched) {
-            <p class="text-xs text-red-400 mt-1.5">Please enter a valid 10-digit mobile number.</p>
-          }
+          <p *ngIf="f['mobile'].invalid && f['mobile'].touched" class="text-xs text-red-400 mt-1.5">Please enter a valid 10-digit mobile number.</p>
         </div>
 
         <div>
@@ -59,9 +51,7 @@
           <input type="email" formControlName="email"
             class="w-full px-4 py-2.5 bg-black/40 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-100 placeholder-gray-600 transition-all outline-none"
             [ngClass]="f['email'].invalid && f['email'].touched ? 'border-red-500/50' : 'border-gray-800'" placeholder="you@example.com">
-          @if (f['email'].invalid && f['email'].touched) {
-            <p class="text-xs text-red-400 mt-1.5">Please enter a valid email address.</p>
-          }
+          <p *ngIf="f['email'].invalid && f['email'].touched" class="text-xs text-red-400 mt-1.5">Please enter a valid email address.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -70,9 +60,7 @@
             <input type="password" formControlName="password"
               class="w-full px-4 py-2.5 bg-black/40 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-100 placeholder-gray-600 transition-all outline-none"
               [ngClass]="f['password'].invalid && f['password'].touched ? 'border-red-500/50' : 'border-gray-800'" placeholder="••••••••">
-            @if (f['password'].invalid && f['password'].touched) {
-              <p class="text-xs text-red-400 mt-1.5">Minimum 8 characters required.</p>
-            }
+            <p *ngIf="f['password'].invalid && f['password'].touched" class="text-xs text-red-400 mt-1.5">Minimum 8 characters required.</p>
           </div>
 
           <div>
@@ -80,23 +68,20 @@
             <input type="password" formControlName="confirmPassword"
               class="w-full px-4 py-2.5 bg-black/40 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-100 placeholder-gray-600 transition-all outline-none"
               [ngClass]="f['confirmPassword'].invalid && f['confirmPassword'].touched ? 'border-red-500/50' : 'border-gray-800'" placeholder="••••••••">
-            @if (f['confirmPassword'].hasError('passwordsMismatch') && f['confirmPassword'].touched) {
-              <p class="text-xs text-red-400 mt-1.5">Passwords do not match.</p>
-            }
+            <p *ngIf="f['confirmPassword'].hasError('passwordsMismatch') && f['confirmPassword'].touched" class="text-xs text-red-400 mt-1.5">Passwords do not match.</p>
           </div>
         </div>
 
         <button type="submit" [disabled]="isLoading()"
           class="w-full mt-4 py-3.5 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold rounded-lg shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500 disabled:opacity-50 disabled:transform-none disabled:cursor-not-allowed flex justify-center items-center gap-2">
-          @if (isLoading()) {
+          <ng-container *ngIf="isLoading(); else signUpLabel">
             <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
             Creating Account...
-          } @else {
-            Sign Up
-          }
+          </ng-container>
+          <ng-template #signUpLabel>Sign Up</ng-template>
         </button>
 
       </form>

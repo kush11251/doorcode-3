@@ -35,15 +35,18 @@
     <!-- Topbar -->
     <header class="p-6 flex justify-between items-center border-b border-white/[0.05] bg-gray-950/80 backdrop-blur-md sticky top-0 z-20">
       <h2 class="text-2xl font-bold text-white capitalize">{{ activeTab() }} Dashboard</h2>
-      <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center font-bold shadow-lg">
-        KP
-      </div>
     </header>
 
-    <div class="p-6 max-w-7xl mx-auto w-full space-y-8">
-      
+    <div class="p-6 max-w-7xl mx-auto w-full space-y-6">
+      <div class="bg-white/[0.02] border border-white/[0.05] backdrop-blur-xl rounded-2xl p-5 shadow-xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <p class="text-xs uppercase tracking-[0.3em] text-gray-500">Organizer</p>
+          <h1 class="text-2xl font-bold text-white">{{ organizerName() }}</h1>
+        </div>
+      </div>
+
       <!-- Quick Stats Row -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="bg-white/[0.02] border border-white/[0.05] backdrop-blur-xl rounded-2xl p-6 shadow-xl flex items-center justify-between">
           <div>
             <p class="text-sm text-gray-400 font-medium mb-1">Total Events</p>
@@ -63,16 +66,6 @@
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
           </div>
         </div>
-
-        <div class="bg-white/[0.02] border border-white/[0.05] backdrop-blur-xl rounded-2xl p-6 shadow-xl flex items-center justify-between">
-          <div>
-            <p class="text-sm text-gray-400 font-medium mb-1">Total Check-Ins</p>
-            <p class="text-3xl font-bold text-white">{{ totalCheckIns() }}</p>
-          </div>
-          <div class="p-3 bg-cyan-500/20 rounded-xl text-cyan-400">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-          </div>
-        </div>
       </div>
 
       <!-- EVENTS VIEW -->
@@ -90,6 +83,7 @@
               <thead>
                 <tr class="bg-black/40 text-xs text-gray-400 uppercase tracking-wider">
                   <th class="p-4 font-medium">Event Name</th>
+                  <th class="p-4 font-medium">Event Code</th>
                   <th class="p-4 font-medium">Date & Location</th>
                   <th class="p-4 font-medium">Status</th>
                   <th class="p-4 font-medium">Attendees</th>
@@ -98,10 +92,12 @@
               </thead>
               <tbody class="divide-y divide-white/[0.05]">
                 @for (event of events(); track event.id) {
-                  <tr class="hover:bg-white/[0.02] transition-colors">
+                  <tr class="hover:bg-white/[0.02] transition-colors cursor-pointer" (click)="viewEvent(event.id)">
                     <td class="p-4">
                       <p class="font-bold text-gray-100">{{ event.name }}</p>
-                      <p class="text-xs text-gray-500 font-mono mt-1">{{ event.id }}</p>
+                    </td>
+                    <td class="p-4 text-sm text-gray-300 font-mono">
+                      {{ event.eventCode || event.id }}
                     </td>
                     <td class="p-4">
                       <p class="text-sm text-gray-300">{{ event.date }}</p>
@@ -117,10 +113,13 @@
                       {{ event.attendeeCount }}
                     </td>
                     <td class="p-4 flex justify-end gap-3">
-                      <button (click)="editEvent(event.id)" class="text-gray-400 hover:text-indigo-400 transition-colors">
+                      <button type="button" (click)="viewInvitees(event.id); $event.stopPropagation()" class="text-gray-400 hover:text-cyan-400 transition-colors" title="View Invitees">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-1a4 4 0 00-4-4h-1m-5 5H7v-1a4 4 0 014-4h1m0 0a4 4 0 100-8 4 4 0 000 8zm-6 4a4 4 0 010-8"></path></svg>
+                      </button>
+                      <button type="button" (click)="editEvent(event.id); $event.stopPropagation()" class="text-gray-400 hover:text-indigo-400 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                       </button>
-                      <button (click)="deleteEvent(event.id)" class="text-gray-400 hover:text-red-400 transition-colors">
+                      <button type="button" (click)="deleteEvent(event.id); $event.stopPropagation()" class="text-gray-400 hover:text-red-400 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                       </button>
                     </td>
@@ -148,8 +147,8 @@
                 <tr class="bg-black/40 text-xs text-gray-400 uppercase tracking-wider">
                   <th class="p-4 font-medium">Invitee Name</th>
                   <th class="p-4 font-medium">Event Code</th>
-                  <th class="p-4 font-medium">RSVP Status</th>
-                  <th class="p-4 font-medium">Door Check-In</th>
+                  <!-- <th class="p-4 font-medium">RSVP Status</th>
+                  <th class="p-4 font-medium">Door Check-In</th> -->
                   <th class="p-4 font-medium text-right">Actions</th>
                 </tr>
               </thead>
@@ -163,7 +162,7 @@
                     <td class="p-4">
                       <span class="font-mono text-sm text-gray-300 bg-gray-800 px-2 py-1 rounded">{{ invitee.eventId }}</span>
                     </td>
-                    <td class="p-4">
+                    <!-- <td class="p-4">
                       <span class="px-2 py-1 text-xs font-medium rounded-full"
                             [ngClass]="{'bg-green-500/10 text-green-400 border border-green-500/20': invitee.status === 'Attending', 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20': invitee.status === 'Pending', 'bg-red-500/10 text-red-400 border border-red-500/20': invitee.status === 'Declined'}">
                         {{ invitee.status }}
@@ -177,14 +176,14 @@
                        } @else {
                          <span class="text-gray-500 text-sm">Not Arrived</span>
                        }
-                    </td>
+                    </td> -->
                     <td class="p-4 flex justify-end gap-3">
-                      <button (click)="editInvitee(invitee.id)" class="text-gray-400 hover:text-purple-400 transition-colors">
+                      <!-- <button (click)="editInvitee(invitee.id)" class="text-gray-400 hover:text-purple-400 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                       </button>
                       <button (click)="deleteInvitee(invitee.id)" class="text-gray-400 hover:text-red-400 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                      </button>
+                      </button> -->
                     </td>
                   </tr>
                 }
@@ -195,4 +194,184 @@
       }
     </div>
   </main>
+
+  @if ((showCreateEventModal() || showEditEventModal()) && activeTab() === 'events') {
+    <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div class="bg-gray-900 border border-white/[0.05] rounded-3xl shadow-2xl w-full max-w-3xl max-h-[calc(100vh-2rem)] overflow-hidden">
+        <div class="p-6 border-b border-white/[0.05] flex justify-between items-center">
+          <div>
+            <h3 class="text-xl font-bold text-white">{{ showEditEventModal() ? 'Edit Event' : 'Create Event' }}</h3>
+            <p class="text-xs text-gray-500 mt-1">{{ showEditEventModal() ? 'Update your event details.' : 'Publish a new event to the organizer dashboard.' }}</p>
+          </div>
+          <button (click)="showEditEventModal() ? closeEditEventModal() : closeCreateEventModal()" class="text-gray-400 hover:text-gray-200">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+
+        <form *ngIf="!showEditEventModal()" class="p-6 overflow-y-auto max-h-[calc(100vh-8rem)] space-y-6" (ngSubmit)="createEvent()">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <label class="block text-sm text-gray-400">
+              Title
+              <input [(ngModel)]="createEventPayload.title" name="title" required class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white focus:border-indigo-500 outline-none" />
+            </label>
+            <label class="block text-sm text-gray-400">
+              Event Code
+              <input [(ngModel)]="createEventPayload.eventCode" name="eventCode" required class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white focus:border-indigo-500 outline-none" />
+            </label>
+            <label class="block text-sm text-gray-400">
+              Date
+              <input type="date" [(ngModel)]="createEventPayload.date" name="date" required class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white focus:border-indigo-500 outline-none" />
+            </label>
+            <label class="block text-sm text-gray-400">
+              Time
+              <input type="time" [(ngModel)]="createEventPayload.time" name="time" required class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white focus:border-indigo-500 outline-none" />
+            </label>
+            <label class="block text-sm text-gray-400">
+              Start DateTime
+              <input type="datetime-local" [(ngModel)]="createEventPayload.startDateTime" name="startDateTime" required class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white focus:border-indigo-500 outline-none" />
+            </label>
+            <label class="block text-sm text-gray-400">
+              End DateTime
+              <input type="datetime-local" [(ngModel)]="createEventPayload.endDateTime" name="endDateTime" class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white focus:border-indigo-500 outline-none" />
+            </label>
+            <label class="block text-sm text-gray-400 lg:col-span-2">
+              Location
+              <input [(ngModel)]="createEventPayload.location" name="location" class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white focus:border-indigo-500 outline-none" />
+            </label>
+            <label class="block text-sm text-gray-400 lg:col-span-2">
+              Address
+              <textarea [(ngModel)]="createEventPayload.address" name="address" rows="2" class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white focus:border-indigo-500 outline-none"></textarea>
+            </label>
+            <label class="block text-sm text-gray-400 lg:col-span-2">
+              Dress Code
+              <input [(ngModel)]="createEventPayload.dressCode" name="dressCode" class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white focus:border-indigo-500 outline-none" />
+            </label>
+            <label class="block text-sm text-gray-400 lg:col-span-2">
+              Description
+              <textarea [(ngModel)]="createEventPayload.description" name="description" rows="3" class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white focus:border-indigo-500 outline-none"></textarea>
+            </label>
+          </div>
+
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <p class="text-sm font-semibold text-white">Activities</p>
+              <button type="button" (click)="addActivityRow()" class="text-xs text-indigo-400 hover:text-indigo-300">Add Activity</button>
+            </div>
+            <div class="space-y-4">
+              @for (activity of createEventPayload.activities; track createEventPayload.activities.indexOf(activity)) {
+                <div class="bg-black/20 border border-white/[0.05] rounded-2xl p-4">
+                  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <label class="block text-sm text-gray-400">
+                      Time
+                      <input [(ngModel)]="activity.time" name="activityTime-{{createEventPayload.activities.indexOf(activity)}}" class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white outline-none" />
+                    </label>
+                    <label class="block text-sm text-gray-400">
+                      Name
+                      <input [(ngModel)]="activity.name" name="activityName-{{createEventPayload.activities.indexOf(activity)}}" class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white outline-none" />
+                    </label>
+                    <label class="block text-sm text-gray-400">
+                      Description
+                      <input [(ngModel)]="activity.description" name="activityDescription-{{createEventPayload.activities.indexOf(activity)}}" class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white outline-none" />
+                    </label>
+                  </div>
+                  <div class="flex justify-end mt-3">
+                    <button type="button" (click)="removeActivityRow(createEventPayload.activities.indexOf(activity))" class="text-xs text-red-400 hover:text-red-300">Remove</button>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 pt-4 border-t border-white/[0.05]">
+            <button type="submit" [disabled]="isCreatingEvent()" class="flex-1 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl text-sm font-semibold transition-colors disabled:opacity-50">
+              Create Event
+            </button>
+            <button type="button" (click)="closeCreateEventModal()" class="flex-1 py-3 bg-white/[0.05] hover:bg-white/[0.08] text-gray-200 rounded-2xl text-sm font-semibold transition-colors">
+              Cancel
+            </button>
+          </div>
+        </form>
+
+        <form *ngIf="showEditEventModal()" class="p-6 overflow-y-auto max-h-[calc(100vh-8rem)] space-y-6" (ngSubmit)="updateEvent()">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <label class="block text-sm text-gray-400">
+              Title
+              <input [(ngModel)]="editEventPayload.title" name="editTitle" required class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white focus:border-indigo-500 outline-none" />
+            </label>
+            <label class="block text-sm text-gray-400">
+              Date
+              <input type="date" [(ngModel)]="editEventPayload.date" name="editDate" required class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white focus:border-indigo-500 outline-none" />
+            </label>
+            <label class="block text-sm text-gray-400">
+              Time
+              <input type="time" [(ngModel)]="editEventPayload.time" name="editTime" required class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white focus:border-indigo-500 outline-none" />
+            </label>
+            <label class="block text-sm text-gray-400">
+              Start DateTime
+              <input type="datetime-local" [(ngModel)]="editEventPayload.startDateTime" name="editStartDateTime" required class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white focus:border-indigo-500 outline-none" />
+            </label>
+            <label class="block text-sm text-gray-400">
+              End DateTime
+              <input type="datetime-local" [(ngModel)]="editEventPayload.endDateTime" name="editEndDateTime" class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white focus:border-indigo-500 outline-none" />
+            </label>
+            <label class="block text-sm text-gray-400 lg:col-span-2">
+              Location
+              <input [(ngModel)]="editEventPayload.location" name="editLocation" class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white focus:border-indigo-500 outline-none" />
+            </label>
+            <label class="block text-sm text-gray-400 lg:col-span-2">
+              Address
+              <textarea [(ngModel)]="editEventPayload.address" name="editAddress" rows="2" class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white focus:border-indigo-500 outline-none"></textarea>
+            </label>
+            <label class="block text-sm text-gray-400 lg:col-span-2">
+              Dress Code
+              <input [(ngModel)]="editEventPayload.dressCode" name="editDressCode" class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white focus:border-indigo-500 outline-none" />
+            </label>
+            <label class="block text-sm text-gray-400 lg:col-span-2">
+              Description
+              <textarea [(ngModel)]="editEventPayload.description" name="editDescription" rows="3" class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white focus:border-indigo-500 outline-none"></textarea>
+            </label>
+          </div>
+
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <p class="text-sm font-semibold text-white">Activities</p>
+              <button type="button" (click)="addActivityRow()" class="text-xs text-indigo-400 hover:text-indigo-300">Add Activity</button>
+            </div>
+            <div class="space-y-4">
+              @for (activity of editEventPayload.activities; track editEventPayload.activities.indexOf(activity)) {
+                <div class="bg-black/20 border border-white/[0.05] rounded-2xl p-4">
+                  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <label class="block text-sm text-gray-400">
+                      Time
+                      <input [(ngModel)]="activity.time" name="activityTime-{{editEventPayload.activities.indexOf(activity)}}" class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white outline-none" />
+                    </label>
+                    <label class="block text-sm text-gray-400">
+                      Name
+                      <input [(ngModel)]="activity.name" name="activityName-{{editEventPayload.activities.indexOf(activity)}}" class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white outline-none" />
+                    </label>
+                    <label class="block text-sm text-gray-400">
+                      Description
+                      <input [(ngModel)]="activity.description" name="activityDescription-{{editEventPayload.activities.indexOf(activity)}}" class="mt-2 w-full rounded-2xl bg-black/70 border border-white/[0.08] px-4 py-3 text-white outline-none" />
+                    </label>
+                  </div>
+                  <div class="flex justify-end mt-3">
+                    <button type="button" (click)="removeActivityRow(editEventPayload.activities.indexOf(activity))" class="text-xs text-red-400 hover:text-red-300">Remove</button>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 pt-4 border-t border-white/[0.05]">
+            <button type="submit" [disabled]="isUpdatingEvent()" class="flex-1 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl text-sm font-semibold transition-colors disabled:opacity-50">
+              Update Event
+            </button>
+            <button type="button" (click)="closeEditEventModal()" class="flex-1 py-3 bg-white/[0.05] hover:bg-white/[0.08] text-gray-200 rounded-2xl text-sm font-semibold transition-colors">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
 </div>

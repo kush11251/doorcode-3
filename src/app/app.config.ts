@@ -1,7 +1,9 @@
 import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection, APP_INITIALIZER } from '@angular/core';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
 import { LucideAngularModule, icons } from 'lucide-angular';
+import { ToastInterceptor } from './services/toast.interceptor';
 
 import { routes } from './app.routes';
 
@@ -15,6 +17,11 @@ export const appConfig: ApplicationConfig = {
       anchorScrolling: 'enabled'
     })),
     importProvidersFrom(HttpClientModule, LucideAngularModule.pick(icons)),
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ToastInterceptor,
+      multi: true
+    },
     {
       provide: APP_INITIALIZER,
       useFactory: () => {

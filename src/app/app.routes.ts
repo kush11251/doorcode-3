@@ -18,6 +18,10 @@ export const routes: Routes = [
         loadComponent: () => import('./components/dashboard/dashboard.component').then(m => m.DashboardComponent)
     },
     {
+        path: 'profile',
+        loadComponent: () => import('./components/profile/profile.component').then(m => m.ProfileComponent)
+    },
+    {
         path: 'event-timeline',
         loadComponent: () => import('./components/event-timeline/event-timeline.component').then(m => m.EventTimelineComponent)
     },
@@ -36,6 +40,10 @@ export const routes: Routes = [
     {
         path: 'seating-arrangement',
         loadComponent: () => import('./components/seating-arrangement/seating-arrangement.component').then(m => m.SeatingArrangementComponent)
+    },
+    {
+        path: 'invitee-manager',
+        loadComponent: () => import('./components/invitee-manager/invitee-manager.component').then(m => m.InviteeManagerComponent)
     },
     {
         path: 'contact',

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterOutlet, NavigationEnd } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { AuthUser } from './models/interfaces';
+import { ToastService } from './services/toast.service';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +19,7 @@ export class AppComponent {
   userInitials = signal('');
   route = signal('');
 
-  constructor(private router: Router, private auth: AuthService) {
+  constructor(private router: Router, private auth: AuthService, public toastService: ToastService) {
     this.auth.initExpiryWatcher(this.router);
     this.updateHeaderState(this.router.url);
 

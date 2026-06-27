@@ -1,7 +1,9 @@
-import { Component, signal, OnDestroy } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { Activity, Countdown, EventDetails } from '../../models/interfaces';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Activity, Countdown, EventDetails, EventDetailsResponse } from '../../models/interfaces';
+import { ApiService } from '../../services/api.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-event-overview',
@@ -10,8 +12,8 @@ import { Activity, Countdown, EventDetails } from '../../models/interfaces';
   templateUrl: './event-overview.component.html',
   styles: ``
 })
-export class EventOverviewComponent implements OnDestroy {
-  // Signal holding the mock event data
+export class EventOverviewComponent implements OnInit, OnDestroy {
+  // Signal holding the event data
   eventData = signal<EventDetails>({
     title: 'Pre-Trek Tech Sync & Gear Check',
     organizer: 'High-Altitude Coders Group',
@@ -54,18 +56,29 @@ export class EventOverviewComponent implements OnDestroy {
     expired: false,
   });
 
+  eventId = signal<string>('');
   private timerRef: number | null = null;
+  private querySub: Subscription | null = null;
 
-  constructor() {
-    const target = new Date(this.eventData().startDateTime);
-    this.updateCountdown(target);
-    this.timerRef = window.setInterval(() => this.updateCountdown(target), 1000);
+  constructor(private route: ActivatedRoute, private router: Router, private api: ApiService) {}
+
+  ngOnInit(): void {
+    this.querySub = this.route.queryParams.subscribe(params => {
+      const eventId = params['eventId'];
+      if (!eventId) {
+        console.error('No eventId query parameter found for event overview.');
+        return;
+      }
+      this.eventId.set(eventId);
+      this.loadEventDetails(eventId);
+    });
   }
 
   ngOnDestroy(): void {
     if (this.timerRef !== null) {
       window.clearInterval(this.timerRef);
     }
+    this.querySub?.unsubscribe();
   }
 
   private updateCountdown(target: Date): void {
@@ -96,5 +109,54 @@ export class EventOverviewComponent implements OnDestroy {
       seconds: String(seconds).padStart(2, '0'),
       expired: false,
     });
+  }
+
+  private loadEventDetails(eventId: string): void {
+    this.api.getEventById(eventId).subscribe({
+      next: (response: EventDetailsResponse) => {
+        const event = response.data;
+        this.eventData.set({
+          title: event.title,
+          organizer: event.organizer,
+          date: event.date,
+          time: event.time,
+          startDateTime: event.startDateTime,
+          location: event.location,
+          address: event.address,
+          dressCode: event.dressCode,
+          description: event.description,
+          activities: event.activities.map((activity) => ({
+            time: activity.time,
+            name: activity.name,
+            description: activity.description
+          }))
+        });
+        this.startCountdown(event.startDateTime);
+      },
+      error: (err) => {
+        console.error('Failed to fetch event overview:', err);
+      }
+    });
+  }
+
+  viewFullTimeline(): void {
+    const eventId = this.eventId();
+    if (!eventId) {
+      return;
+    }
+
+    this.router.navigate(['/event-timeline'], {
+      queryParams: { eventId },
+      state: { eventData: this.eventData() }
+    });
+  }
+
+  private startCountdown(startDateTime: string): void {
+    if (this.timerRef !== null) {
+      window.clearInterval(this.timerRef);
+    }
+    const target = new Date(startDateTime);
+    this.updateCountdown(target);
+    this.timerRef = window.setInterval(() => this.updateCountdown(target), 1000);
   }
 }

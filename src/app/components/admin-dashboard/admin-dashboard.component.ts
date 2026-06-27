@@ -1,6 +1,6 @@
 import { Component, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SystemMetric, PlatformLog, DoorCodeUserDetail } from '../../models/interfaces';
+import { SystemMetric, PlatformLog, DoorCodeUserDetail, LogDetail, DashboardAnalyticsData } from '../../models/interfaces';
 import { ApiService } from '../../services/api.service';
 import { DateFormatService } from '../../services/date-format.service';
 
@@ -26,10 +26,19 @@ export class AdminDashboardComponent implements OnInit {
   // Real-time Platform Logs
   logs = signal<PlatformLog[]>([]);
 
+  // Analytics Data
+  dashboardAnalytics = signal<DashboardAnalyticsData | null>(null);
+  isLoadingAnalytics = signal<boolean>(false);
+
   // Users Management
   users = signal<DoorCodeUserDetail[]>([]);
   selectedUser = signal<DoorCodeUserDetail | null>(null);
   showUserModal = signal<boolean>(false);
+
+  // Log Detail
+  selectedLogDetail = signal<LogDetail | null>(null);
+  showLogModal = signal<boolean>(false);
+  isLoadingLogDetail = signal<boolean>(false);
 
   // Global Flags
   isMaintenanceMode = signal<boolean>(false);
@@ -47,8 +56,23 @@ export class AdminDashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.fetchDashboardAnalytics();
     this.fetchLogs();
     this.fetchUsers();
+  }
+
+  fetchDashboardAnalytics(): void {
+    this.isLoadingAnalytics.set(true);
+    this.api.getDashboardAnalytics().subscribe({
+      next: (response) => {
+        this.dashboardAnalytics.set(response.data);
+        this.isLoadingAnalytics.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to fetch dashboard analytics:', err);
+        this.isLoadingAnalytics.set(false);
+      }
+    });
   }
 
   fetchLogs(): void {
@@ -99,6 +123,26 @@ export class AdminDashboardComponent implements OnInit {
     this.selectedUser.set(null);
   }
 
+  showLogDetail(logId: string): void {
+    this.isLoadingLogDetail.set(true);
+    this.api.getLogDetail(logId).subscribe({
+      next: (response) => {
+        this.selectedLogDetail.set(response.data);
+        this.showLogModal.set(true);
+        this.isLoadingLogDetail.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to fetch log detail:', err);
+        this.isLoadingLogDetail.set(false);
+      }
+    });
+  }
+
+  closeLogModal(): void {
+    this.showLogModal.set(false);
+    this.selectedLogDetail.set(null);
+  }
+
   setSection(section: 'overview' | 'logs' | 'settings' | 'users') {
     this.currentSection.set(section);
     if (section === 'users') {
@@ -135,7 +179,34 @@ export class AdminDashboardComponent implements OnInit {
     return this.dateFormat.formatToIST(timestamp);
   }
 
+  getRequestBody(log: LogDetail): string {
+    if (typeof log.request.body === 'string') {
+      return log.request.body;
+    }
+    return JSON.stringify(log.request.body, null, 2);
+  }
+
+  getResponseBody(log: LogDetail): string {
+    if (typeof log.response.body === 'string') {
+      try {
+        return JSON.stringify(JSON.parse(log.response.body), null, 2);
+      } catch {
+        return log.response.body;
+      }
+    }
+    return JSON.stringify(log.response.body, null, 2);
+  }
+
   formatTimestampISTFull(timestamp: string): string {
     return this.dateFormat.formatToISTFull(timestamp);
+  }
+
+  getHeapUsagePercent(): string {
+    const analytics = this.dashboardAnalytics();
+    if (!analytics?.memoryUsage?.heapTotalMB || !analytics.memoryUsage.heapUsedMB) {
+      return '—';
+    }
+    const percent = (analytics.memoryUsage.heapUsedMB / analytics.memoryUsage.heapTotalMB) * 100;
+    return percent.toFixed(0);
   }
 }

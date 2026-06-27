@@ -1,6 +1,8 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TimelineEvent } from '../../models/interfaces';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Activity, EventDetails, TimelineEvent } from '../../models/interfaces';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-event-timeline',
@@ -9,44 +11,64 @@ import { TimelineEvent } from '../../models/interfaces';
   templateUrl: './event-timeline.component.html',
   styles: ``
 })
-export class EventTimelineComponent {
-  // Signal holding the timeline data
-  timelineEvents = signal<TimelineEvent[]>([
-    {
-      id: '1',
-      startTime: '13:00',
-      endTime: '14:00',
-      title: 'Doors Open & Registration',
-      description: 'Check in using your DoorCode QR, grab your badge, and enjoy some light refreshments before the main event.',
+export class EventTimelineComponent implements OnInit {
+  eventData = signal<EventDetails | null>(null);
+  timelineEvents = signal<TimelineEvent[]>([]);
+
+  private querySub: any;
+
+  constructor(private route: ActivatedRoute, private router: Router, private api: ApiService) {}
+
+  ngOnInit(): void {
+    this.querySub = this.route.queryParams.subscribe(params => {
+      const eventId = params['eventId'] as string | undefined;
+      const historyState = window.history.state as { eventData?: EventDetails };
+
+      if (historyState?.eventData) {
+        this.setEventData(historyState.eventData);
+      } else if (eventId) {
+        this.api.getEventById(eventId).subscribe({
+          next: response => {
+            this.setEventData({
+              title: response.data.title,
+              organizer: response.data.organizer,
+              date: response.data.date,
+              time: response.data.time,
+              startDateTime: response.data.startDateTime,
+              location: response.data.location,
+              address: response.data.address,
+              dressCode: response.data.dressCode,
+              description: response.data.description,
+              activities: response.data.activities.map(activity => ({
+                time: activity.time,
+                name: activity.name,
+                description: activity.description
+              }))
+            });
+          },
+          error: err => {
+            console.error('Failed to load timeline event data:', err);
+          }
+        });
+      }
+    });
+  }
+
+  private setEventData(event: EventDetails): void {
+    this.eventData.set(event);
+    this.timelineEvents.set(event.activities.map((activity, index) => ({
+      id: String(index + 1),
+      startTime: activity.time,
+      endTime: activity.time,
+      title: activity.name,
+      description: activity.description,
       type: 'session',
-      location: 'Main Lobby'
-    },
-    {
-      id: '2',
-      startTime: '14:00',
-      endTime: '15:00',
-      title: 'Opening Keynote: The Future of AI',
-      description: 'A deep dive into how artificial intelligence is reshaping hyper-local commerce and event management.',
-      type: 'keynote',
-      speaker: 'Jane Doe, CEO',
-      location: 'Auditorium A'
-    },
-    {
-      id: '3',
-      startTime: '15:00',
-      endTime: '15:30',
-      title: 'Networking Break',
-      type: 'break'
-    },
-    {
-      id: '4',
-      startTime: '15:30',
-      endTime: '17:00',
-      title: 'Technical Workshop: Angular 18 & Signals',
-      description: 'Interactive session on building high-performance progressive web apps.',
-      type: 'session',
-      speaker: 'Alex Smith, Principal Engineer',
-      location: 'Workshop Room 1'
-    }
-  ]);
+      speaker: undefined,
+      location: event.location
+    })));
+  }
+
+  ngOnDestroy(): void {
+    this.querySub?.unsubscribe();
+  }
 }

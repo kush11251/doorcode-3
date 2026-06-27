@@ -60,7 +60,7 @@ export class SignupComponent {
       email: this.signupForm.value.email,
       phoneNumber: this.signupForm.value.mobile,
       password: this.signupForm.value.password,
-      role: 'organizer'
+      role: 'user'
     };
 
     this.api.signup(payload).subscribe({

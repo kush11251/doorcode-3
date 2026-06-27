@@ -16,6 +16,7 @@ export class AppComponent {
   showHeader = signal(true);
   loggedIn = signal(false);
   userInitials = signal('');
+  route = signal('');
 
   constructor(private router: Router, private auth: AuthService) {
     this.auth.initExpiryWatcher(this.router);
@@ -33,13 +34,15 @@ export class AppComponent {
     this.showHeader.set(path !== '/');
     const user = this.auth.getUser();
     const logged = this.auth.isAuthenticated();
+    const route = this.auth.getRedirectRouteForRole(user?.role || '');
+    this.route.set(route);
     this.loggedIn.set(logged);
     this.userInitials.set(logged ? this.extractInitials(user) : '');
   }
 
   private extractInitials(user: AuthUser | null): string {
     if (!user) {
-      return 'JD';
+      return 'KP';
     }
 
     const first = user.firstName?.trim() || '';
@@ -58,6 +61,6 @@ export class AppComponent {
       return namePart.slice(0, 2).toUpperCase();
     }
 
-    return 'JD';
+    return 'KP';
   }
 }

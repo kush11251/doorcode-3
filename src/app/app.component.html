@@ -1,7 +1,7 @@
 
 <div *ngIf="showHeader()" class="sticky top-0 z-50 bg-gray-950/95 backdrop-blur-xl border-b border-white/10">
   <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-    <a [routerLink]="loggedIn() ? '/dashboard' : '/'" class="flex items-center gap-3">
+    <a [routerLink]="route()" class="flex items-center gap-3">
       <img src="/doorcode_logo.png" alt="DoorCode" class="h-10 w-10 object-contain" />
       <span class="text-lg font-semibold tracking-tight text-white">DoorCode</span>
     </a>
@@ -15,7 +15,7 @@
 
     <div *ngIf="loggedIn()" class="flex items-center gap-3">
       <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-sm font-semibold text-white shadow-lg">
-        {{ userInitials() || 'JD' }}
+        {{ userInitials() || 'KP' }}
       </div>
     </div>
   </div>

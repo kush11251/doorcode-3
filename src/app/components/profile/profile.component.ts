@@ -27,30 +27,30 @@ export class ProfileComponent implements OnInit {
 
   // Mock Event History
   events = signal<UserEvent[]>([
-    {
-      id: 'EVT-01',
-      name: 'Kedarnath High-Altitude Trek',
-      date: 'April 28, 2026',
-      role: 'Organizing',
-      status: 'Upcoming',
-      location: 'Kedarnath Basecamp'
-    },
-    {
-      id: 'EVT-02',
-      name: 'Jiffly Platform Launch Party',
-      date: 'February 15, 2026',
-      role: 'Organizing',
-      status: 'Completed',
-      location: 'Pune Tech Hub'
-    },
-    {
-      id: 'EVT-03',
-      name: 'Thailand Developer Retreat',
-      date: 'December 18, 2024',
-      role: 'Attending',
-      status: 'Completed',
-      location: 'Phuket & Krabi'
-    }
+    // {
+    //   id: 'EVT-01',
+    //   name: 'Kedarnath High-Altitude Trek',
+    //   date: 'April 28, 2026',
+    //   role: 'Organizing',
+    //   status: 'Upcoming',
+    //   location: 'Kedarnath Basecamp'
+    // },
+    // {
+    //   id: 'EVT-02',
+    //   name: 'Jiffly Platform Launch Party',
+    //   date: 'February 15, 2026',
+    //   role: 'Organizing',
+    //   status: 'Completed',
+    //   location: 'Pune Tech Hub'
+    // },
+    // {
+    //   id: 'EVT-03',
+    //   name: 'Thailand Developer Retreat',
+    //   date: 'December 18, 2024',
+    //   role: 'Attending',
+    //   status: 'Completed',
+    //   location: 'Phuket & Krabi'
+    // }
   ]);
 
   upcomingEvents = computed(() => this.events().filter(e => e.status === 'Upcoming'));

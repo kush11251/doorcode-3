@@ -133,6 +133,7 @@ export interface TimelineEvent {
 
 export interface DashboardEvent {
   id: string;
+  eventCode: string;
   title: string;
   date: string;
   location: string;
@@ -167,6 +168,22 @@ export interface CreateEventPayload {
   dressCode: string;
   description: string;
   activities: EventActivityPayload[];
+}
+
+export interface JoinEventPayload {
+  eventCode: string;
+}
+
+export interface JoinEventResponse {
+  statusCode: number;
+  message: string;
+  data: OrganizerEventItem & {
+    metadata: Record<string, unknown>;
+    _id: string;
+    createdAt: string;
+    updatedAt: string;
+    __v?: number;
+  };
 }
 
 export interface UpdateEventPayload {

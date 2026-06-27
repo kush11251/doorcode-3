@@ -1,5 +1,6 @@
-import { Component, signal, computed, OnInit } from '@angular/core';
+import { Component, signal, computed, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { SystemMetric, PlatformLog, DoorCodeUserDetail, LogDetail, DashboardAnalyticsData } from '../../models/interfaces';
 import { ApiService } from '../../services/api.service';
 import { DateFormatService } from '../../services/date-format.service';
@@ -11,7 +12,7 @@ import { DateFormatService } from '../../services/date-format.service';
   templateUrl: './admin-dashboard.component.html',
   styles: ``
 })
-export class AdminDashboardComponent implements OnInit {
+export class AdminDashboardComponent implements OnInit, OnDestroy {
   // Navigation State
   currentSection = signal<'overview' | 'logs' | 'settings' | 'users'>('overview');
 
@@ -52,13 +53,28 @@ export class AdminDashboardComponent implements OnInit {
 
   constructor(
     private api: ApiService,
-    private dateFormat: DateFormatService
+    private dateFormat: DateFormatService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.fetchDashboardAnalytics();
     this.fetchLogs();
     this.fetchUsers();
+
+    this.logRefreshIntervalId = window.setInterval(() => {
+      if (this.currentSection() === 'logs') {
+        this.fetchLogs();
+      }
+    }, 10000);
+  }
+
+  redirectToUserDashboard(): void {
+    this.router.navigate(['/dashboard']);
+  }
+
+  redirectToOrganizerDashboard(): void {
+    this.router.navigate(['/organizer-dashboard']);
   }
 
   fetchDashboardAnalytics(): void {
@@ -229,6 +245,8 @@ export class AdminDashboardComponent implements OnInit {
     return this.dateFormat.formatToISTFull(timestamp);
   }
 
+  logRefreshIntervalId: number | null = null;
+
   getHeapUsagePercent(): string {
     const analytics = this.dashboardAnalytics();
     if (!analytics?.memoryUsage?.heapTotalMB || !analytics.memoryUsage.heapUsedMB) {
@@ -236,5 +254,12 @@ export class AdminDashboardComponent implements OnInit {
     }
     const percent = (analytics.memoryUsage.heapUsedMB / analytics.memoryUsage.heapTotalMB) * 100;
     return percent.toFixed(0);
+  }
+
+  ngOnDestroy(): void {
+    if (this.logRefreshIntervalId !== null) {
+      clearInterval(this.logRefreshIntervalId);
+      this.logRefreshIntervalId = null;
+    }
   }
 }

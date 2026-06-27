@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { AuthResponse, LoginPayload, SignupPayload, PlatformLog, DoorCodeUserDetail, LogDetail, UserProfileUpdatePayload, PasswordUpdatePayload, UpdateProfileResponse, UpdatePasswordResponse, DashboardAnalyticsResponse, OrganizerDashboardResponse, EventDetailsResponse, OrganizerInviteesResponse, OrganizerInviteePatchPayload, AddEventOrganizerPayload, AddEventInviteePayload, GlobalSettingsPayload, GlobalSettingsResponse, CreateEventPayload, CreateEventResponse, UpdateEventPayload, UpdateEventResponse } from '../models/interfaces';
+import { AuthResponse, LoginPayload, SignupPayload, PlatformLog, DoorCodeUserDetail, LogDetail, UserProfileUpdatePayload, PasswordUpdatePayload, UpdateProfileResponse, UpdatePasswordResponse, DashboardAnalyticsResponse, OrganizerDashboardResponse, EventDetailsResponse, OrganizerInviteesResponse, OrganizerInviteePatchPayload, AddEventOrganizerPayload, AddEventInviteePayload, GlobalSettingsPayload, GlobalSettingsResponse, CreateEventPayload, CreateEventResponse, UpdateEventPayload, UpdateEventResponse, JoinEventPayload, JoinEventResponse } from '../models/interfaces';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -81,6 +81,15 @@ export class ApiService {
   createEvent(payload: CreateEventPayload): Observable<CreateEventResponse> {
     console.log('Creating event with payload:', payload);
     return this.http.post<CreateEventResponse>(`${this.baseUrl}/events`, payload, {
+      headers: {
+        ...this.getAuthHeaders(),
+        'Content-Type': 'application/json'
+      }
+    });
+  }
+
+  joinEvent(payload: JoinEventPayload): Observable<JoinEventResponse> {
+    return this.http.post<JoinEventResponse>(`${this.baseUrl}/events/join`, payload, {
       headers: {
         ...this.getAuthHeaders(),
         'Content-Type': 'application/json'

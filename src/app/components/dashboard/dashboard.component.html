@@ -28,8 +28,8 @@
             <p class="text-sm text-gray-300">{{ event.location }}</p>
           </div>
           <div class="rounded-2xl bg-black/40 p-4 border border-white/[0.05]">
-            <p class="text-xs text-gray-500 uppercase tracking-[0.3em] mb-2">Event ID</p>
-            <p class="text-sm text-gray-300">{{ event.id }}</p>
+            <p class="text-xs text-gray-500 uppercase tracking-[0.3em] mb-2">Event Code</p>
+            <p class="text-sm text-gray-300">{{ event.eventCode }}</p>
           </div>
         </div>
 
@@ -76,7 +76,7 @@
           <input 
             type="text" 
             [ngModel]="partyCode()" 
-            (ngModelChange)="partyCode.set($event)"
+            (ngModelChange)="partyCode.set($event.toUpperCase())"
             class="w-full px-4 py-4 bg-black/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-center text-2xl font-mono tracking-[0.2em] text-white placeholder-gray-600 uppercase transition-all outline-none"
             placeholder="ENTER CODE"
             (keyup.enter)="joinEvent()"

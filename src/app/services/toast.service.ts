@@ -41,6 +41,6 @@ export class ToastService {
 
     this.toasts.update((list) => [toast, ...list]);
 
-    setTimeout(() => this.dismissToast(toast.id), 4000);
+    setTimeout(() => this.dismissToast(toast.id), 750);
   }
 }

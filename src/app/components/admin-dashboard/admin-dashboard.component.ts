@@ -151,13 +151,41 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   toggleMaintenance() {
-    this.isMaintenanceMode.update(val => !val);
-    console.log(`Maintenance mode set to: ${this.isMaintenanceMode()}`);
+    const newValue = !this.isMaintenanceMode();
+    this.isMaintenanceMode.set(newValue);
+    this.api.updateGlobalSettings({
+      maintenanceMode: newValue,
+      signupEnabled: this.isRegistrationOpen()
+    }).subscribe({
+      next: (response) => {
+        this.isMaintenanceMode.set(response.data.maintenanceMode);
+        this.isRegistrationOpen.set(response.data.signupEnabled);
+      },
+      error: (err) => {
+        console.error('Failed to update global maintenance mode:', err);
+        this.isMaintenanceMode.update(val => !val);
+        alert('Unable to change maintenance mode. Please try again.');
+      }
+    });
   }
 
   toggleRegistration() {
-    this.isRegistrationOpen.update(val => !val);
-    console.log(`Global registration open set to: ${this.isRegistrationOpen()}`);
+    const newValue = !this.isRegistrationOpen();
+    this.isRegistrationOpen.set(newValue);
+    this.api.updateGlobalSettings({
+      maintenanceMode: this.isMaintenanceMode(),
+      signupEnabled: newValue
+    }).subscribe({
+      next: (response) => {
+        this.isMaintenanceMode.set(response.data.maintenanceMode);
+        this.isRegistrationOpen.set(response.data.signupEnabled);
+      },
+      error: (err) => {
+        console.error('Failed to update signup enabled state:', err);
+        this.isRegistrationOpen.update(val => !val);
+        alert('Unable to change registration state. Please try again.');
+      }
+    });
   }
 
   clearLogs() {

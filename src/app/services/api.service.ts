@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { AuthResponse, LoginPayload, SignupPayload, PlatformLog, DoorCodeUserDetail, LogDetail, UserProfileUpdatePayload, PasswordUpdatePayload, UpdateProfileResponse, UpdatePasswordResponse, DashboardAnalyticsResponse, OrganizerDashboardResponse, EventDetailsResponse, OrganizerInviteesResponse, OrganizerInviteePatchPayload, AddEventOrganizerPayload, AddEventInviteePayload, CreateEventPayload, CreateEventResponse, UpdateEventPayload, UpdateEventResponse } from '../models/interfaces';
+import { AuthResponse, LoginPayload, SignupPayload, PlatformLog, DoorCodeUserDetail, LogDetail, UserProfileUpdatePayload, PasswordUpdatePayload, UpdateProfileResponse, UpdatePasswordResponse, DashboardAnalyticsResponse, OrganizerDashboardResponse, EventDetailsResponse, OrganizerInviteesResponse, OrganizerInviteePatchPayload, AddEventOrganizerPayload, AddEventInviteePayload, GlobalSettingsPayload, GlobalSettingsResponse, CreateEventPayload, CreateEventResponse, UpdateEventPayload, UpdateEventResponse } from '../models/interfaces';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -144,6 +144,15 @@ export class ApiService {
 
   updateOrganizerInvitees(organizerId: string, payload: OrganizerInviteePatchPayload): Observable<OrganizerInviteesResponse> {
     return this.http.patch<OrganizerInviteesResponse>(`${this.baseUrl}/events/organizer/${organizerId}/invitees`, payload, {
+      headers: {
+        ...this.getAuthHeaders(),
+        'Content-Type': 'application/json'
+      }
+    });
+  }
+
+  updateGlobalSettings(payload: GlobalSettingsPayload): Observable<GlobalSettingsResponse> {
+    return this.http.patch<GlobalSettingsResponse>(`${this.baseUrl}/global`, payload, {
       headers: {
         ...this.getAuthHeaders(),
         'Content-Type': 'application/json'

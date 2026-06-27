@@ -100,6 +100,26 @@ export interface OrganizerInviteesResponse {
   data: OrganizerInvitee[];
 }
 
+export interface GlobalSettingsPayload {
+  maintenanceMode: boolean;
+  signupEnabled: boolean;
+}
+
+export interface GlobalSettingsResponse {
+  statusCode: number;
+  data: {
+    metadata: {
+      updatedBy: string;
+    };
+    _id: string;
+    maintenanceMode: boolean;
+    signupEnabled: boolean;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+  };
+}
+
 export interface TimelineEvent {
   id: string;
   startTime: string;

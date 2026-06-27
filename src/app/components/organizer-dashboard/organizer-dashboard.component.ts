@@ -72,6 +72,14 @@ export class OrganizerDashboardComponent implements OnInit {
 
   constructor(private api: ApiService, private auth: AuthService, private router: Router) {}
 
+  private getAuthenticatedOrganizerName(): string {
+    const user = this.auth.getUser();
+    if (!user) {
+      return '';
+    }
+    return `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}`.trim();
+  }
+
   // Tab Management
   setTab(tab: 'events' | 'invitees' | 'analytics') {
     this.activeTab.set(tab);
@@ -108,7 +116,7 @@ export class OrganizerDashboardComponent implements OnInit {
     this.createEventPayload = {
       title: '',
       eventCode: '',
-      organizer: '',
+      organizer: this.getAuthenticatedOrganizerName(),
       organizerIds: [],
       inviteeIds: [],
       date: '',
@@ -293,6 +301,7 @@ export class OrganizerDashboardComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.resetCreateEventPayload();
     this.loadOrganizerEvents();
     this.loadOrganizerAnalytics();
     this.loadOrganizerInvitees();

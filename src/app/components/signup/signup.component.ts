@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { SignupPayload } from '../../models/interfaces';
@@ -30,8 +30,9 @@ export class SignupComponent {
   signupForm: FormGroup;
   isLoading = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
+  joinEventCode: string | null = null;
 
-  constructor(private fb: FormBuilder, private api: ApiService, private auth: AuthService, private router: Router) {
+  constructor(private fb: FormBuilder, private api: ApiService, private auth: AuthService, private router: Router, private route: ActivatedRoute) {
     this.signupForm = this.fb.group({
       firstName: ['', [Validators.required, Validators.minLength(2)]],
       lastName: ['', [Validators.required, Validators.minLength(2)]],
@@ -44,6 +45,10 @@ export class SignupComponent {
 
   // Easy getter for template validation
   get f() { return this.signupForm.controls; }
+
+  ngOnInit(): void {
+    this.joinEventCode = this.route.snapshot.queryParamMap.get('eventCode') || this.route.snapshot.queryParamMap.get('eventcode');
+  }
 
   onSubmit(): void {
     if (this.signupForm.invalid) {
@@ -68,7 +73,19 @@ export class SignupComponent {
         this.isLoading.set(false);
         this.auth.saveSession(response);
         const redirectRoute = this.auth.getRedirectRouteForRole(response.user.role);
-        this.router.navigate([redirectRoute]);
+
+        if (this.joinEventCode) {
+          this.api.joinEvent({ eventCode: this.joinEventCode.trim().toUpperCase() }).subscribe({
+            next: () => {
+              this.router.navigate([redirectRoute]);
+            },
+            error: () => {
+              this.router.navigate([redirectRoute]);
+            }
+          });
+        } else {
+          this.router.navigate([redirectRoute]);
+        }
       },
       error: (err) => {
         this.isLoading.set(false);

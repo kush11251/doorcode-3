@@ -88,7 +88,7 @@
 
       <p class="mt-8 text-center text-sm text-gray-500">
         Already have an account? 
-        <a routerLink="/login" class="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors cursor-pointer">Sign in here</a>
+        <a [routerLink]="['/login']" [queryParams]="{ eventCode: joinEventCode }" class="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors cursor-pointer">Sign in here</a>
       </p>
     </div>
   </div>

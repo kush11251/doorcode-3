@@ -68,7 +68,7 @@
 
       <p class="mt-8 text-center text-sm text-gray-500">
         Don't have an account? 
-        <a href="/signup" class="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">Create an organizer account</a>
+        <a [routerLink]="['/signup']" [queryParams]="{ eventCode: joinEventCode }" class="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">Create an organizer account</a>
       </p>
     </div>
   </div>

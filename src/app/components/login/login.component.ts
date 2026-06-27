@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { LoginPayload } from '../../models/interfaces';
@@ -9,7 +9,7 @@ import { LoginPayload } from '../../models/interfaces';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './login.component.html',
   styles: ``
 })
@@ -19,8 +19,9 @@ export class LoginComponent {
   // Signals for handling loading state and error messages dynamically
   isLoading = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
+  joinEventCode: string | null = null;
 
-  constructor(private fb: FormBuilder, private api: ApiService, private auth: AuthService, private router: Router) {
+  constructor(private fb: FormBuilder, private api: ApiService, private auth: AuthService, private router: Router, private route: ActivatedRoute) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
@@ -30,6 +31,10 @@ export class LoginComponent {
   // Easy getters for template validation
   get email() { return this.loginForm.get('email')!; }
   get password() { return this.loginForm.get('password')!; }
+
+  ngOnInit(): void {
+    this.joinEventCode = this.route.snapshot.queryParamMap.get('eventCode') || this.route.snapshot.queryParamMap.get('eventcode');
+  }
 
   onSubmit(): void {
     if (this.loginForm.invalid) {
@@ -47,7 +52,19 @@ export class LoginComponent {
         this.isLoading.set(false);
         this.auth.saveSession(response);
         const redirectRoute = this.auth.getRedirectRouteForRole(response.user.role);
-        this.router.navigate([redirectRoute]);
+
+        if (this.joinEventCode) {
+          this.api.joinEvent({ eventCode: this.joinEventCode.trim().toUpperCase() }).subscribe({
+            next: () => {
+              this.router.navigate([redirectRoute]);
+            },
+            error: () => {
+              this.router.navigate([redirectRoute]);
+            }
+          });
+        } else {
+          this.router.navigate([redirectRoute]);
+        }
       },
       error: (err) => {
         this.isLoading.set(false);

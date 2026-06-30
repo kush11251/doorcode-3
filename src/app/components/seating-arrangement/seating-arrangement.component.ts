@@ -1,6 +1,9 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Seat, Table } from '../../models/interfaces';
+import { ActivatedRoute } from '@angular/router';
+import { Seat, Table, SeatingTableData, SeatingResponse, UserSummaryRecord, UserSummaryResponse, SeatingUpdatePayload } from '../../models/interfaces';
+import { ApiService } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-seating-arrangement',
@@ -9,49 +12,247 @@ import { Seat, Table } from '../../models/interfaces';
   templateUrl: './seating-arrangement.component.html',
   styles: ``
 })
-export class SeatingArrangementComponent {
-  // Dynamic Configuration: [6, 6, 4, 4] means 4 tables total. 
-  // Two with 6 seats, two with 4 seats. You can change this to [4,4,4,4,4,4] or [6,6,6,6] etc.
-  tableConfiguration = [6, 6, 4, 4];
+export class SeatingArrangementComponent implements OnInit {
+  eventId = '';
 
-  // Mock Names for realism
-  private mockNames = ['Alex Rivera', 'Jordan Lee', 'Taylor Smith', 'Casey Vance', 'Riley Chen', 'Morgan Stark', 'Sam Wilson', 'Jamie Doe'];
+  tables = signal<Table[]>([]);
+  seatingId = signal<string>('');
+  isLoading = signal<boolean>(false);
+  errorMessage = signal<string>('');
+  successMessage = signal<string>('');
 
-  // Signal holding the table layouts
-  tables = signal<Table[]>(this.generateDynamicTables(this.tableConfiguration));
-  
-  // Signal for the currently viewed seat
+  userSummary = signal<UserSummaryRecord[]>([]);
+  selectedUserId = signal<string>('');
+  selectedGuestType = signal<'vip' | 'guest' | 'speaker' | 'none'>('guest');
+  updateTableNumber = signal<string>('1');
+  isUpdatingTable = signal<boolean>(false);
+  isEditModalOpen = signal<boolean>(false);
+
   selectedSeat = signal<Seat | null>(null);
   hasSelection = computed(() => this.selectedSeat() !== null);
+  canEdit = computed(() => {
+    const role = this.auth.getUser()?.role;
+    return role === 'admin' || role === 'organizer';
+  });
 
-  private generateDynamicTables(config: number[]): Table[] {
-    return config.map((capacity, index) => {
-      const tableId = `T${index + 1}`;
-      const seats: Seat[] = [];
-      
-      for (let i = 1; i <= capacity; i++) {
-        // Randomly leave some seats empty, otherwise assign a random name
-        const isEmpty = Math.random() > 0.85; 
-        const randomName = this.mockNames[Math.floor(Math.random() * this.mockNames.length)];
-        
-        // Randomly assign VIP status to a few people
-        const role = isEmpty ? 'Empty' : (Math.random() > 0.9 ? 'VIP' : 'Guest');
+  constructor(private api: ApiService, private auth: AuthService, private route: ActivatedRoute) {}
 
-        seats.push({
-          id: `${tableId}-S${i}`,
-          tableId: tableId,
-          number: i,
-          assigneeName: isEmpty ? null : randomName,
-          role: role
-        });
+  private loadSeating(): void {
+    this.isLoading.set(true);
+    this.errorMessage.set('');
+
+    this.api.getSeatingForEvent(this.eventId).subscribe({
+      next: (response: SeatingResponse) => {
+        this.seatingId.set(response.data.seatingId);
+        this.tables.set(this.mapSeatingTables(response.data.tables));
+        this.isLoading.set(false);
+        this.successMessage.set('');
+      },
+      error: (err) => {
+        console.error('Failed to load seating layout:', err);
+        this.errorMessage.set('Unable to load seating layout. Please try again later.');
+        this.isLoading.set(false);
       }
+    });
+  }
+
+  private mapSeatingTables(tables: SeatingTableData[]): Table[] {
+    return tables.map((table) => {
+      const tableId = `T${table.tableNumber}`;
+      const seats: Seat[] = Array.from({ length: table.numberOfPeople }, (_, index) => {
+        const seatNumber = (index + 1).toString();
+        const person = table.people.find((person) => person.seat === seatNumber);
+        const role = person ? person.role.toUpperCase() : 'Empty';
+        const assigneeName = person && person.firstName ? `${person.firstName} ${person.lastName ?? ''}`.trim() : null;
+
+        return {
+          id: `${tableId}-S${index + 1}`,
+          tableId,
+          number: index + 1,
+          userId: person?.userId || null,
+          assigneeName: assigneeName || null,
+          role: role === 'VIP' ? 'VIP' : role === 'GUEST' ? 'Guest' : role === 'SPEAKER' ? 'Speaker' : 'Empty'
+        };
+      });
 
       return {
         id: tableId,
-        name: `Table ${index + 1}`,
-        capacity: capacity,
-        seats: seats
+        name: `Table ${table.tableNumber}`,
+        capacity: table.numberOfPeople,
+        seats
       };
+    });
+  }
+
+  getTopRowSeats(table: Table): Seat[] {
+    return table.seats.slice(0, Math.ceil(table.capacity / 2));
+  }
+
+  getBottomRowSeats(table: Table): Seat[] {
+    return table.seats.slice(Math.ceil(table.capacity / 2));
+  }
+
+  loadUserSummary(): void {
+    if (!this.canEdit()) {
+      return;
+    }
+
+    this.api.getUserSummary().subscribe({
+      next: (response: UserSummaryResponse) => {
+        this.userSummary.set(response.data);
+      },
+      error: (err) => {
+        console.error('Failed to load user summary:', err);
+      }
+    });
+  }
+
+  private ensureUserSummaryLoaded(): void {
+    if (this.canEdit() && this.userSummary().length === 0) {
+      this.loadUserSummary();
+    }
+  }
+
+  ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      const routeEventId = params['eventId'] as string | null;
+      if (routeEventId) {
+        this.eventId = routeEventId;
+      }
+      if (this.canEdit()) {
+        this.loadUserSummary();
+      }
+      this.loadSeating();
+    });
+  }
+
+  onTableNumberChange(event: Event): void {
+    this.updateTableNumber.set((event.target as HTMLSelectElement).value);
+  }
+
+  onUserSelectionChange(event: Event): void {
+    this.selectedUserId.set((event.target as HTMLSelectElement).value);
+  }
+
+  onGuestTypeChange(event: Event): void {
+    this.selectedGuestType.set((event.target as HTMLSelectElement).value as 'vip' | 'guest' | 'speaker' | 'none');
+  }
+
+  openEditModalForTable(tableId: string): void {
+    if (!this.canEdit()) {
+      return;
+    }
+
+    this.ensureUserSummaryLoaded();
+    this.updateTableNumber.set(tableId);
+    const table = this.tables().find((table) => table.id === `T${tableId}`);
+    if (table && table.seats.length > 0) {
+      const firstSeat = table.seats[0];
+      this.selectedSeat.set(firstSeat);
+      this.selectedUserId.set(firstSeat.userId || '');
+      this.selectedGuestType.set(firstSeat.role !== 'Empty' ? firstSeat.role.toLowerCase() as 'vip' | 'guest' | 'speaker' : 'none');
+    }
+    this.isEditModalOpen.set(true);
+  }
+
+  openEditModalForSeat(seat: Seat): void {
+    if (!this.canEdit()) {
+      return;
+    }
+
+    this.ensureUserSummaryLoaded();
+    this.selectedSeat.set(seat);
+    this.updateTableNumber.set(seat.tableId.replace(/^T/, ''));
+    this.selectedUserId.set(seat.userId || '');
+    this.selectedGuestType.set(seat.role !== 'Empty' ? seat.role.toLowerCase() as 'vip' | 'guest' | 'speaker' : 'none');
+    this.isEditModalOpen.set(true);
+  }
+
+  closeEditModal(): void {
+    this.isEditModalOpen.set(false);
+    this.selectedSeat.set(null);
+    this.successMessage.set('');
+    this.errorMessage.set('');
+    this.loadSeating();
+  }
+
+  clearSelectedSeat(): void {
+    this.selectedUserId.set('');
+    this.selectedGuestType.set('none');
+    this.successMessage.set('');
+    this.errorMessage.set('');
+  }
+
+  updateSeatingTable(): void {
+    if (!this.canEdit()) {
+      this.errorMessage.set('You do not have permission to edit seating.');
+      return;
+    }
+
+    if (!this.seatingId() || !this.updateTableNumber()) {
+      this.errorMessage.set('Select a valid seating table and guest first.');
+      return;
+    }
+
+    if (!this.selectedSeat()) {
+      this.errorMessage.set('Select a seat to update first.');
+      return;
+    }
+
+    if (this.selectedGuestType() !== 'none' && !this.selectedUserId()) {
+      this.errorMessage.set('Please select a guest or choose empty seat mode.');
+      return;
+    }
+
+    this.isUpdatingTable.set(true);
+    this.errorMessage.set('');
+    this.successMessage.set('');
+
+    const table = this.tables().find((table) => table.id === `T${this.updateTableNumber()}`);
+    if (!table) {
+      this.errorMessage.set('Selected table not found.');
+      this.isUpdatingTable.set(false);
+      return;
+    }
+
+    const updatedSeats = table.seats.map((seat) => {
+      if (seat.id !== this.selectedSeat()?.id) {
+        return seat;
+      }
+
+      return {
+        ...seat,
+        userId: this.selectedGuestType() === 'none' ? '' : this.selectedUserId() || '',
+        role: this.selectedGuestType() === 'none'
+          ? 'Empty'
+          : this.selectedGuestType() === 'vip'
+            ? 'VIP'
+            : this.selectedGuestType() === 'speaker'
+              ? 'Speaker'
+              : 'Guest'
+      };
+    });
+
+    const payload: SeatingUpdatePayload = {
+      numberOfPeople: table.capacity,
+      people: updatedSeats.map((seat) => ({
+        userId: seat.userId || '',
+        role: this.selectedGuestType() === 'none' ? '' : seat.role.toLowerCase() as 'vip' | 'guest' | 'speaker',
+        seat: seat.number.toString()
+      }))
+    };
+
+    this.api.updateSeatingTable(this.seatingId(), this.updateTableNumber(), payload).subscribe({
+      next: (response) => {
+        this.tables.set(this.mapSeatingTables(response.data.tables));
+        this.isUpdatingTable.set(false);
+        this.closeEditModal();
+      },
+      error: (err) => {
+        console.error('Failed to update seating table:', err);
+        this.errorMessage.set('Unable to update seating table. Please try again.');
+        this.isUpdatingTable.set(false);
+      }
     });
   }
 

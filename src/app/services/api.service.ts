@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { AuthResponse, LoginPayload, SignupPayload, PlatformLog, DoorCodeUserDetail, LogDetail, UserProfileUpdatePayload, PasswordUpdatePayload, UpdateProfileResponse, UpdatePasswordResponse, DashboardAnalyticsResponse, OrganizerDashboardResponse, EventDetailsResponse, OrganizerInviteesResponse, OrganizerInviteePatchPayload, AddEventOrganizerPayload, AddEventInviteePayload, GlobalSettingsPayload, GlobalSettingsResponse, CreateEventPayload, CreateEventResponse, UpdateEventPayload, UpdateEventResponse, JoinEventPayload, JoinEventResponse } from '../models/interfaces';
+import { AuthResponse, LoginPayload, SignupPayload, PlatformLog, DoorCodeUserDetail, LogDetail, UserProfileUpdatePayload, PasswordUpdatePayload, UpdateProfileResponse, UpdatePasswordResponse, DashboardAnalyticsResponse, OrganizerDashboardResponse, EventDetailsResponse, OrganizerInviteesResponse, OrganizerInviteePatchPayload, AddEventOrganizerPayload, AddEventInviteePayload, GlobalSettingsPayload, GlobalSettingsResponse, CreateEventPayload, CreateEventResponse, UpdateEventPayload, UpdateEventResponse, JoinEventPayload, JoinEventResponse, SeatingResponse, SeatingUpdatePayload, SeatingUpdateResponse, UserSummaryResponse } from '../models/interfaces';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -45,6 +45,12 @@ export class ApiService {
   getUsers(): Observable<{ count: number; data: DoorCodeUserDetail[] }> {
     return this.http.get<{ count: number; data: DoorCodeUserDetail[] }>(`${this.baseUrl}/users`, { 
       headers: this.getAuthHeaders() 
+    });
+  }
+
+  getUserSummary(): Observable<UserSummaryResponse> {
+    return this.http.get<UserSummaryResponse>(`${this.baseUrl}/users/summary`, {
+      headers: this.getAuthHeaders()
     });
   }
 
@@ -172,6 +178,21 @@ export class ApiService {
   getEventById(eventId: string): Observable<EventDetailsResponse> {
     return this.http.get<EventDetailsResponse>(`${this.baseUrl}/events/${eventId}`, {
       headers: this.getAuthHeaders()
+    });
+  }
+
+  getSeatingForEvent(eventId: string): Observable<SeatingResponse> {
+    return this.http.get<SeatingResponse>(`${this.baseUrl}/seating/event/${eventId}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  updateSeatingTable(seatingId: string, tableNumber: string, payload: SeatingUpdatePayload): Observable<SeatingUpdateResponse> {
+    return this.http.patch<SeatingUpdateResponse>(`${this.baseUrl}/seating/${seatingId}/table/${tableNumber}`, payload, {
+      headers: {
+        ...this.getAuthHeaders(),
+        'Content-Type': 'application/json'
+      }
     });
   }
 

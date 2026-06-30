@@ -117,7 +117,7 @@
             <button type="button" (click)="viewFullTimeline()" class="block rounded-2xl bg-indigo-500/10 border border-indigo-500/20 px-5 py-4 text-center text-sm font-semibold text-indigo-200 hover:bg-indigo-500/15 transition w-full sm:w-auto">
               View Full Timeline
             </button>
-            <a routerLink="/seating-arrangement" class="block rounded-2xl bg-cyan-500/10 border border-cyan-500/20 px-5 py-4 text-center text-sm font-semibold text-cyan-200 hover:bg-cyan-500/15 transition">
+            <a [routerLink]="['/seating-arrangement']" [queryParams]="{ eventId: eventId() }" class="block rounded-2xl bg-cyan-500/10 border border-cyan-500/20 px-5 py-4 text-center text-sm font-semibold text-cyan-200 hover:bg-cyan-500/15 transition">
               Seating Arrangement
             </a>
             <a routerLink="/dashboard" class="block rounded-2xl bg-white/[0.05] border border-white/[0.08] px-5 py-4 text-center text-sm font-semibold text-white hover:bg-white/[0.08] transition">

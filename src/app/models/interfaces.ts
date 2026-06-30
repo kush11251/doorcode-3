@@ -353,6 +353,7 @@ export interface Seat {
   id: string;
   tableId: string;
   number: number;
+  userId: string | null;
   assigneeName: string | null;
   role: 'Guest' | 'Speaker' | 'VIP' | 'Empty';
 }
@@ -362,6 +363,61 @@ export interface Table {
   name: string;
   capacity: number;
   seats: Seat[];
+}
+
+export interface SeatingPerson {
+  userId: string;
+  firstName: string | null;
+  lastName: string | null;
+  role: 'vip' | 'guest' | 'speaker' | 'none' | string;
+  seat?: string;
+}
+
+export interface SeatingTableData {
+  tableNumber: string;
+  numberOfPeople: number;
+  people: SeatingPerson[];
+}
+
+export interface SeatingData {
+  seatingId: string;
+  eventId: string;
+  tables: SeatingTableData[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SeatingResponse {
+  statusCode: number;
+  data: SeatingData;
+}
+
+export interface SeatingUpdatePayload {
+  numberOfPeople: number;
+  people: Array<{
+    userId: string;
+    role: 'vip' | 'guest' | 'speaker' | 'none' | string;
+    seat: string;
+  }>;
+}
+
+export interface SeatingUpdateResponse {
+  statusCode: number;
+  message: string;
+  data: SeatingData;
+}
+
+export interface UserSummaryRecord {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  userId: string;
+}
+
+export interface UserSummaryResponse {
+  statusCode: number;
+  count: number;
+  data: UserSummaryRecord[];
 }
 
 export interface SystemMetric {

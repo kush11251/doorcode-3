@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gray-950 text-gray-100 py-12 px-4 sm:px-6 relative overflow-hidden flex flex-col items-center">
+<div class="min-h-screen bg-gray-950 text-gray-100 py-12 px-4 sm:px-6 relative overflow-visible flex flex-col items-center">
   
   <div class="absolute top-0 right-1/4 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none"></div>
 
@@ -26,49 +26,178 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-x-12 gap-y-20 pb-32">
-      
-      @for (table of tables(); track table.id) {
-        <div class="flex flex-col items-center">
-          
-          <div class="flex gap-6 sm:gap-10 mb-4">
-            @for (seat of table.seats.slice(0, table.capacity / 2); track seat.id) {
-              <button 
-                (click)="viewSeatDetails(seat)"
-                class="w-12 h-12 rounded-full border transition-all duration-300 flex items-center justify-center font-bold text-sm group"
-                [ngClass]="getSeatClasses(seat)">
-                @if (seat.assigneeName) {
-                  {{ seat.assigneeName.charAt(0) }}
-                } @else {
-                  <span class="text-[10px] text-gray-600">{{ seat.number }}</span>
-                }
-              </button>
-            }
-          </div>
-
-          <div class="w-full max-w-sm h-24 sm:h-32 bg-gradient-to-b from-white/[0.03] to-white/[0.01] border border-white/[0.05] rounded-[2.5rem] backdrop-blur-md shadow-2xl flex items-center justify-center relative">
-            <span class="text-gray-500 font-mono tracking-widest uppercase text-sm font-semibold">{{ table.name }}</span>
-            <div class="absolute w-12 h-12 bg-indigo-500/10 rounded-full blur-md"></div>
-          </div>
-
-          <div class="flex gap-6 sm:gap-10 mt-4">
-            @for (seat of table.seats.slice(table.capacity / 2, table.capacity); track seat.id) {
-              <button 
-                (click)="viewSeatDetails(seat)"
-                class="w-12 h-12 rounded-full border transition-all duration-300 flex items-center justify-center font-bold text-sm group"
-                [ngClass]="getSeatClasses(seat)">
-                @if (seat.assigneeName) {
-                  {{ seat.assigneeName.charAt(0) }}
-                } @else {
-                  <span class="text-[10px] text-gray-600">{{ seat.number }}</span>
-                }
-              </button>
-            }
-          </div>
-
+    <div class="mb-6 rounded-2xl border border-white/[0.05] bg-white/[0.02] px-4 py-4 text-sm text-white/80 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-500/15 text-indigo-300">⇆</span>
+        <div>
+          <p class="font-semibold text-white">Scroll left to right to see all tables and chairs.</p>
+          <p class="text-xs text-gray-400">Use touch drag or mouse swipe over the seating rows.</p>
         </div>
-      }
+      </div>
+      <span class="text-xs text-gray-400">Tip: some tables may extend beyond the screen.</span>
+    </div>
 
+    <div class="mb-6 rounded-2xl border border-white/[0.05] bg-black/20 px-5 py-5 grid gap-4 md:grid-cols-3 lg:grid-cols-[1fr_1fr_280px] items-end">
+      <!-- <div class="space-y-2">
+        <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Table</label>
+        <select class="w-full rounded-2xl border border-white/10 bg-slate-950/80 px-4 py-3 text-white outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20" (change)="onTableNumberChange($event)" [value]="updateTableNumber()" [disabled]="!canEdit()">
+          <option value="">Select a table</option>
+          <option *ngFor="let table of tables()" [value]="table.id.slice(1)">Table {{ table.id.slice(1) }} · {{ table.capacity }} seats</option>
+        </select>
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Guest</label>
+        <select class="w-full rounded-2xl border border-white/10 bg-slate-950/80 px-4 py-3 text-white outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20" (change)="onUserSelectionChange($event)" [value]="selectedUserId()" [disabled]="!canEdit()">
+          <option value="">Select a guest</option>
+          <option *ngFor="let user of userSummary()" [value]="user.userId">{{ user.firstName }} {{ user.lastName }}</option>
+        </select>
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Guest type</label>
+        <select class="w-full rounded-2xl border border-white/10 bg-slate-950/80 px-4 py-3 text-white outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20" (change)="onGuestTypeChange($event)" [value]="selectedGuestType()" [disabled]="!canEdit()">
+          <option value="guest">Guest</option>
+          <option value="vip">VIP</option>
+          <option value="speaker">Speaker</option>
+        </select>
+      </div> -->
+
+      <div class="md:col-span-3 lg:col-auto flex flex-col justify-between gap-3">
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-gray-300">
+          <p *ngIf="!canEdit()" class="text-gray-400">View only mode. Admins and organizers can edit seating by clicking a table or seat.</p>
+          <p *ngIf="canEdit() && !isLoading()" class="text-gray-300">Click a seat or the table card to open the edit modal.</p>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="isEditModalOpen()" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-8">
+      <div class="w-full max-w-2xl rounded-3xl border border-white/10 bg-slate-950/95 p-7 shadow-2xl backdrop-blur-xl">
+        <div class="flex items-center justify-between gap-4 mb-6">
+          <div>
+            <h3 class="text-xl font-semibold text-white">Edit seating assignment</h3>
+            <p class="text-sm text-gray-400">Only admin and organizer roles can save changes.</p>
+          </div>
+          <button class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-gray-300 hover:bg-white/10" (click)="closeEditModal()">Close</button>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div class="space-y-2">
+            <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Table</label>
+            <select class="w-full rounded-2xl border border-white/10 bg-slate-950/80 px-4 py-3 text-white outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20" (change)="onTableNumberChange($event)" [value]="updateTableNumber()">
+              <option value="">Select a table</option>
+              <option *ngFor="let table of tables()" [value]="table.id.slice(1)">Table {{ table.id.slice(1) }} · {{ table.capacity }} seats</option>
+            </select>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Guest</label>
+            <select class="w-full rounded-2xl border border-white/10 bg-slate-950/80 px-4 py-3 text-white outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20" (change)="onUserSelectionChange($event)" [value]="selectedUserId()">
+              <option value="">Select a guest</option>
+              <option *ngFor="let user of userSummary()" [value]="user.userId">{{ user.firstName }} {{ user.lastName }}</option>
+            </select>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Guest type</label>
+            <select class="w-full rounded-2xl border border-white/10 bg-slate-950/80 px-4 py-3 text-white outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20" (change)="onGuestTypeChange($event)" [value]="selectedGuestType()">
+              <option value="guest">Guest</option>
+              <option value="vip">VIP</option>
+              <option value="speaker">Speaker</option>
+              <option value="none">Empty seat</option>
+            </select>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Status</label>
+            <div class="rounded-2xl border border-white/10 bg-slate-950/80 px-4 py-3 text-sm text-gray-300">
+              <p *ngIf="successMessage()" class="text-emerald-300">{{ successMessage() }}</p>
+              <p *ngIf="errorMessage()" class="text-rose-300">{{ errorMessage() }}</p>
+              <p *ngIf="!successMessage() && !errorMessage()" class="text-gray-400">Ready to update seating.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
+          <button class="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10" (click)="closeEditModal()">Cancel</button>
+          <button class="rounded-2xl border border-rose-500/20 bg-rose-500/5 px-5 py-3 text-sm font-semibold text-rose-200 transition hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:bg-slate-700" type="button" (click)="clearSelectedSeat()" [disabled]="isUpdatingTable()">
+            Clear seat
+          </button>
+          <button class="rounded-2xl bg-indigo-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-indigo-400 disabled:cursor-not-allowed disabled:bg-slate-700" (click)="updateSeatingTable()" [disabled]="isUpdatingTable()">
+            {{ isUpdatingTable() ? 'Saving...' : 'Save assignment' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto pb-32 -mx-4 px-4">
+      <ng-container *ngIf="isLoading(); else loadedSeating">
+        <div class="min-h-[260px] flex items-center justify-center text-gray-400 text-sm">
+          Loading seating layout...
+        </div>
+      </ng-container>
+
+      <ng-template #loadedSeating>
+        <ng-container *ngIf="errorMessage(); else noError">
+          <div class="min-h-[260px] flex flex-col items-center justify-center gap-3 text-center text-gray-300">
+            <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-500/10 text-red-300 border border-red-500/20">
+              !
+            </div>
+            <p class="text-lg font-semibold">{{ errorMessage() }}</p>
+            <p class="max-w-md text-sm text-gray-500">Please refresh the page or try again later.</p>
+          </div>
+        </ng-container>
+
+        <ng-template #noError>
+          <ng-container *ngIf="tables().length > 0; else emptySeating">
+            <div class="inline-flex min-w-max gap-x-10 gap-y-20">
+              <div *ngFor="let table of tables()" class="flex flex-col items-center min-w-[320px] w-[320px]">
+                <div class="flex flex-wrap justify-center gap-3 sm:gap-6 mb-4">
+                <button *ngFor="let seat of getTopRowSeats(table)"
+                  (click)="viewSeatDetails(seat); openEditModalForSeat(seat)"
+                  class="w-12 h-12 rounded-full border transition-all duration-300 flex items-center justify-center font-bold text-sm group"
+                  [ngClass]="getSeatClasses(seat)">
+                  <ng-container *ngIf="seat.assigneeName; else emptySeatTop">
+                    {{ seat.assigneeName.charAt(0) }}
+                  </ng-container>
+                  <ng-template #emptySeatTop>
+                    <span class="text-[10px] text-gray-600">{{ seat.number }}</span>
+                  </ng-template>
+                </button>
+              </div>
+
+                <button type="button" (click)="openEditModalForTable(table.id.slice(1)); viewSeatDetails(table.seats[0])" class="group w-full h-24 sm:h-32 rounded-[2.5rem] bg-gradient-to-b from-white/[0.03] to-white/[0.01] border border-white/[0.05] backdrop-blur-md shadow-2xl flex items-center justify-center relative transition hover:border-indigo-400/50">
+                  <div class="relative z-10 text-center">
+                    <div class="text-gray-500 font-mono tracking-widest uppercase text-sm font-semibold">{{ table.name }}</div>
+                    <div class="text-xs text-gray-400 mt-1">Capacity {{ table.capacity }}</div>
+                    <div class="mt-2 text-[10px] uppercase tracking-[0.25em] text-indigo-300 opacity-0 transition group-hover:opacity-100">Edit table</div>
+                  </div>
+                  <div class="absolute w-12 h-12 bg-indigo-500/10 rounded-full blur-md"></div>
+                </button>
+
+                <div class="flex flex-wrap justify-center gap-3 sm:gap-6 mt-4">
+                  <button *ngFor="let seat of getBottomRowSeats(table)"
+                    (click)="viewSeatDetails(seat); openEditModalForSeat(seat)"
+                    class="w-12 h-12 rounded-full border transition-all duration-300 flex items-center justify-center font-bold text-sm group"
+                    [ngClass]="getSeatClasses(seat)">
+                    <ng-container *ngIf="seat.assigneeName; else emptySeatBottom">
+                      {{ seat.assigneeName.charAt(0) }}
+                    </ng-container>
+                    <ng-template #emptySeatBottom>
+                      <span class="text-[10px] text-gray-600">{{ seat.number }}</span>
+                    </ng-template>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-template #emptySeating>
+            <div class="min-h-[260px] flex items-center justify-center text-gray-400 text-sm">
+              No seating data available for this event yet.
+            </div>
+          </ng-template>
+        </ng-template>
+      </ng-template>
     </div>
   </div>
 

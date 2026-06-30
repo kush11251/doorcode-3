@@ -26,6 +26,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   // Real-time Platform Logs
   logs = signal<PlatformLog[]>([]);
+  logsPerPage = 50;
+  currentLogPage = signal<number>(1);
 
   // Analytics Data
   dashboardAnalytics = signal<DashboardAnalyticsData | null>(null);
@@ -51,11 +53,44 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   // Computeds
   errorLogCount = computed(() => this.logs().filter(l => l.level === 'ERROR').length);
 
+  logSections = computed(() => {
+    const batchSize = this.logsPerPage;
+    const allLogs = this.logs();
+    const sections: { title: string; logs: PlatformLog[] }[] = [];
+
+    for (let i = 0; i < allLogs.length; i += batchSize) {
+      const start = i + 1;
+      const end = Math.min(i + batchSize, allLogs.length);
+      sections.push({
+        title: `Logs ${start} - ${end}`,
+        logs: allLogs.slice(i, end)
+      });
+    }
+
+    return sections;
+  });
+
+  logPages = computed(() => this.logSections().map((_, index) => index + 1));
+
+  currentLogSection = computed(() => {
+    const sections = this.logSections();
+    const pageIndex = Math.min(Math.max(this.currentLogPage() - 1, 0), sections.length - 1);
+    return sections[pageIndex] ?? null;
+  });
+
   constructor(
     private api: ApiService,
     private dateFormat: DateFormatService,
     private router: Router
   ) {}
+
+  setLogPage(page: number): void {
+    const pageCount = this.logPages().length;
+    if (page < 1 || page > pageCount) {
+      return;
+    }
+    this.currentLogPage.set(page);
+  }
 
   ngOnInit(): void {
     this.fetchDashboardAnalytics();
@@ -66,7 +101,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       if (this.currentSection() === 'logs') {
         this.fetchLogs();
       }
-    }, 10000);
+    }, 30000);
   }
 
   redirectToUserDashboard(): void {
@@ -96,6 +131,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.api.getLogs().subscribe({
       next: (response) => {
         this.logs.set(response.data);
+        this.currentLogPage.set(1);
         this.isLoadingLogs.set(false);
       },
       error: (err) => {
@@ -224,21 +260,21 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   getRequestBody(log: LogDetail): string {
-    if (typeof log.request.body === 'string') {
-      return log.request.body;
+    if (typeof log?.request?.body === 'string') {
+      return log?.request?.body;
     }
-    return JSON.stringify(log.request.body, null, 2);
+    return JSON.stringify(log?.request?.body, null, 2);
   }
 
   getResponseBody(log: LogDetail): string {
-    if (typeof log.response.body === 'string') {
+    if (typeof log?.response?.body === 'string') {
       try {
-        return JSON.stringify(JSON.parse(log.response.body), null, 2);
+        return JSON.stringify(JSON.parse(log?.response?.body), null, 2);
       } catch {
-        return log.response.body;
+        return log?.response?.body;
       }
     }
-    return JSON.stringify(log.response.body, null, 2);
+    return JSON.stringify(log?.response?.body, null, 2);
   }
 
   formatTimestampISTFull(timestamp: string): string {
